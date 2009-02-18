@@ -22,9 +22,12 @@
  */
 
 #include <stdio.h>
-#include <fcntl.h>
-#include <io.h>
 #include <string.h>
+
+#if defined(WIN32) || defined(__WIN32) || defined(__WIN32__)
+# include <fcntl.h>
+# include <io.h>
+#endif
 
 #include "bs2b.h"
 
@@ -104,8 +107,10 @@ int main( int argc, char *argv[] )
 	bs2b_set_srate( bs2bdp, srate );
 	bs2b_set_level( bs2bdp, level );
 
+#if defined(WIN32) || defined(__WIN32) || defined(__WIN32__)
 	_setmode( _fileno( stdin ),  _O_BINARY );
 	_setmode( _fileno( stdout ), _O_BINARY );
+#endif
 
 	while( 2 == fread( sample, sizeof( short ), 2, stdin ) )
 	{
