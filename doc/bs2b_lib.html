@@ -8,6 +8,7 @@
 
 
 
+
   
   <meta content="Boris Mikhaylov" name="author"></head><body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);" alink="#000099" link="#000099" vlink="#990099">
 <table style="width: 700px; text-align: left; font-family: times new roman,times,serif;" border="0" cellpadding="2" cellspacing="2">
@@ -18,7 +19,7 @@ description.</span></big><br>
       <br>
 The <a href="http://bs2b.sourceforge.net/" target="_top">bs2b</a>
 library is simple
-to use. See table 1 for example. It is a reductive code of '<a href="src/bs2bstream.c">bs2bstream.c</a>'. The 'bs2b.h', 'bs2bclass.h' and 'bs2bconvert.c' files of the source code
+to use. See table 1 for example. It is a reductive code of 'bs2bstream.c'. The 'bs2b.h', 'bs2bclass.h' and 'bs2bconvert.c' files of the source code
 package can help also.<br>
 You can use a 'bs2bstream' with '<a href="http://lame.sourceforge.net/" target="_top">lame</a>' by a command line like this:<br>&nbsp; lame -t --decode test-44-16.wav - | bs2bstream -4 | \<br>&nbsp;&nbsp;&nbsp; lame -r -x -m j -s 44.1 --bitwidth 16 --preset extreme - test.mp3<br>
 or without of '-x' swap bytes of input file, like this:<br>&nbsp; lame -t --decode test-44-16.wav - | bs2bstream -4 | \<br>&nbsp;&nbsp;&nbsp; lame -r -m j -s 44.1 --bitwidth 16 --preset extreme - test.mp3<br><br>
@@ -27,13 +28,9 @@ library.</span><br>
       <table style="width: 100%; background-color: rgb(255, 255, 204); text-align: left; font-family: courier new,courier,monospace;" border="0" cellpadding="2" cellspacing="2">
         <tbody>
           <tr>
-            <td style="vertical-align: top;"><font size="-1">#include &lt;stdio.h&gt;<br>
-#include &lt;fcntl.h&gt;<br>
-#include &lt;io.h&gt;<br>
+            <td style="vertical-align: top;"><font size="-1">#include &lt;stdio.h&gt;<br>#include "bs2b.h"<br>
             <br>
-#include "bs2b.h"<br>
-            <br>
-int main( int argc, char *argv[] )<br>
+int main()<br>
 {<br>
 &nbsp; t_bs2bdp bs2bdp;<br>
 &nbsp; short&nbsp;&nbsp;&nbsp; sample[ 2 ];<br>
@@ -44,9 +41,6 @@ int main( int argc, char *argv[] )<br>
 &nbsp; bs2b_set_srate( bs2bdp, 44100L );<br>
 &nbsp; bs2b_set_level( bs2bdp, BS2B_DEFAULT_CLEVEL );<br>
 &nbsp; */<br>
-            <br>
-&nbsp; _setmode( _fileno( stdin ),&nbsp; _O_BINARY );<br>
-&nbsp; _setmode( _fileno( stdout ), _O_BINARY );<br>
             <br>&nbsp; /* 16 bit raw PCM */<br>
 &nbsp; while( 2 == fread( sample, sizeof( short ), 2, stdin ) )<br>
 &nbsp; {<br>
@@ -58,7 +52,7 @@ int main( int argc, char *argv[] )<br>
 &nbsp; bs2bdp = 0;<br>
             <br>
 &nbsp; return 0 ;<br>
-} /* main */<br>
+}<br>
             </font> </td>
           </tr>
         </tbody>
@@ -79,23 +73,17 @@ library by C++.</span><br>
 
         <tbody>
           <tr>
-            <td style="vertical-align: top;"><font size="-1">#include &lt;stdio.h&gt;<br>
-#include &lt;fcntl.h&gt;<br>
-#include &lt;io.h&gt;<br>
+            <td style="vertical-align: top;"><font size="-1">#include &lt;stdio.h&gt;<br>#include "bs2bclass.h"<br>
             <br>
-#include "bs2bclass.h"<br>
-            <br>
-int main( int argc, char *argv[] )<br>
+int main()<br>
 {<br>
 &nbsp; bs2b_base bs2b;<br>
             <br>
-&nbsp; // bs2b.set_srate( 44100L );<br>
-&nbsp; // bs2b.set_level( BS2B_DEFAULT_CLEVEL );<br>
-            <br>
-&nbsp; _setmode( _fileno( stdin ),&nbsp; _O_BINARY );<br>
-&nbsp; _setmode( _fileno( stdout ), _O_BINARY );<br>
-            <br>
-&nbsp; short sample[ 2 ]; // </font><font size="-1">16 bit raw PCM</font><br>
+&nbsp; // </font><font size="-1">Default init value</font><br>
+            <font size="-1">
+&nbsp; //bs2b.set_srate( 44100L );<br>
+&nbsp; //bs2b.set_level( BS2B_DEFAULT_CLEVEL );<br>
+            <br>&nbsp; short sample[ 2 ]; // </font><font size="-1">16 bit raw PCM</font><br>
             <font size="-1">&nbsp; while( 2 == fread( sample, sizeof( short ), 2, stdin ) )<br>
 &nbsp; {<br>
 &nbsp;&nbsp;&nbsp; bs2b.cross_feed( sample );<br>
@@ -103,7 +91,7 @@ int main( int argc, char *argv[] )<br>
 &nbsp; }<br>
             <br>
 &nbsp; return 0 ;<br>
-} /* main */<br>
+}<br>
             </font> </td>
           </tr>
         </tbody>
