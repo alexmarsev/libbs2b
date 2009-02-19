@@ -1,5 +1,4 @@
 SUBDIRS = \
-	src \
 	img
 
 EXTRA_DIST = \

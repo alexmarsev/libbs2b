@@ -33,7 +33,6 @@ AC_CONFIG_FILES([libbs2b.pc
                  Makefile
                  doc/Makefile
                  doc/img/Makefile
-                 doc/src/Makefile
                  src/Makefile
                  win32/Makefile])
 AC_OUTPUT
