@@ -29,7 +29,8 @@ AC_TYPE_SIZE_T
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([strrchr])
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([libbs2b.pc
+                 Makefile
                  doc/Makefile
                  doc/img/Makefile
                  doc/src/Makefile

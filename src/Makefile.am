@@ -6,9 +6,17 @@ bin_PROGRAMS = \
 	bs2bstream
 
 
-pkginclude_HEADERS = \
+bs2b_HEADERS = \
 	bs2b.h \
 	bs2bclass.h
+
+bs2bdir = $(includedir)/bs2b
+
+libbs2b_la_DEPENDENCIES = \
+    $(bs2b_HEADERS)
+
+libbs2b_la_LDFLAGS = \
+	-lm
 
 libbs2b_la_SOURCES = \
 	bs2b.c \
