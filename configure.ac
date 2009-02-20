@@ -16,7 +16,9 @@ AC_PROG_LIBTOOL
 PKG_PROG_PKG_CONFIG
 
 # Checks for libraries.
-PKG_CHECK_EXISTS([sndfile], [], [])
+PKG_CHECK_EXISTS([sndfile], [], [
+    AC_MSG_ERROR(Please install libsndfile.)
+])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h malloc.h string.h])
