@@ -35,7 +35,7 @@ static void print_usage( char *progname )
 {
 	fputs( "\n"
 		"    Bauer stereophonic-to-binaural DSP stream converter. "
-		"Version 2.2.0\n"
+		"Version 2.2.1\n"
 		"    PCM stdin-stdout, 44100Hz, 16bit\n",
 		stderr );
 	fprintf( stderr, "Usage : %s [-x]\n", progname );

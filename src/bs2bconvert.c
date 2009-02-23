@@ -37,7 +37,7 @@ static void copy_data( SNDFILE *outfile, SNDFILE *infile, t_bs2bdp bs2bdp );
 
 static void print_usage( char *progname )
 {
-	puts( "\n    Bauer stereophonic-to-binaural DSP converter. Version 2.2.0\n" );
+	puts( "\n    Bauer stereophonic-to-binaural DSP converter. Version 2.2.1\n" );
 	printf( "Usage : %s [-x] <input file> <output file>\n", progname );
 	puts( "\n"
 		"    'x' is number of:\n"
