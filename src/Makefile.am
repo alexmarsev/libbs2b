@@ -16,7 +16,7 @@ libbs2b_la_DEPENDENCIES = \
     $(bs2b_HEADERS)
 
 libbs2b_la_LDFLAGS = \
-	-lm
+	-lm -version-info 0:0:0
 
 libbs2b_la_SOURCES = \
 	bs2b.c \
