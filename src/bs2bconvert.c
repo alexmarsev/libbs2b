@@ -39,8 +39,8 @@ static void print_usage( char *progname )
 {
 	printf( "\n"
 		"    Bauer stereophonic-to-binaural DSP converter. "
-		"Version %u.%u.%u\n",
-		BS2B_VERSION_MAJOR, BS2B_VERSION_MINOR, BS2B_VERSION_RELEASE );
+		"Version %s\n",
+		BS2B_VERSION_STR );
 	printf( "Usage : %s [-x] <input file> <output file>\n", progname );
 	printf( "\n"
 		"    'x' is number of:\n"
