@@ -24,6 +24,8 @@
 #ifndef BS2B_H
 #define BS2B_H
 
+#include "bs2bversion.h"
+
 /* Number of crossfeed levels */
 #define BS2B_CLEVELS           3
 

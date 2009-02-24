@@ -25,26 +25,25 @@
 #include <string.h>
 
 #if defined(WIN32) || defined(__WIN32) || defined(__WIN32__)
-# include <fcntl.h>
-# include <io.h>
+#include <fcntl.h>
+#include <io.h>
 #endif
 
 #include "bs2b.h"
 
 static void print_usage( char *progname )
 {
-	fputs( "\n"
+	fprintf( stderr, "\n"
 		"    Bauer stereophonic-to-binaural DSP stream converter. "
-		"Version 2.2.1\n"
+		"Version %u.%u.%u\n"
 		"    PCM stdin-stdout, 44100Hz, 16bit\n",
-		stderr );
+		BS2B_VERSION_MAJOR, BS2B_VERSION_MINOR, BS2B_VERSION_RELEASE );
 	fprintf( stderr, "Usage : %s [-x]\n", progname );
-	fputs( "\n"
+	fprintf( stderr, "\n"
 		"    'x' is number of:\n"
 		"    1,2,3 - Low to High crossfeed levels,\n"
 		"    4,5,6 - Low to High crossfeed levels of 'Easy' version\n"
-		"    The default crossfeed level is 6\n",
-		stderr );
+		"    The default crossfeed level is 6\n" );
 } /* print_usage() */
 
 int main( int argc, char *argv[] )

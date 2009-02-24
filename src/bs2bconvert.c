@@ -37,9 +37,12 @@ static void copy_data( SNDFILE *outfile, SNDFILE *infile, t_bs2bdp bs2bdp );
 
 static void print_usage( char *progname )
 {
-	puts( "\n    Bauer stereophonic-to-binaural DSP converter. Version 2.2.1\n" );
+	printf( "\n"
+		"    Bauer stereophonic-to-binaural DSP converter. "
+		"Version %u.%u.%u\n",
+		BS2B_VERSION_MAJOR, BS2B_VERSION_MINOR, BS2B_VERSION_RELEASE );
 	printf( "Usage : %s [-x] <input file> <output file>\n", progname );
-	puts( "\n"
+	printf( "\n"
 		"    'x' is number of:\n"
 		"    1,2,3 - Low to High crossfeed levels,\n"
 		"    4,5,6 - Low to High crossfeed levels of 'Easy' version\n"
