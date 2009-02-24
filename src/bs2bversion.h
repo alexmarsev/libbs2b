@@ -28,6 +28,8 @@
 #define BS2B_VERSION_MINOR    2
 #define BS2B_VERSION_RELEASE  1
 
+#define BS2B_VERSION_STR "2.2.1"
+
 #define BS2B_VERSION_INT \
 	( BS2B_VERSION_MAJOR << 16 ) | \
 	( BS2B_VERSION_MINOR << 8  ) | \
