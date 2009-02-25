@@ -118,6 +118,9 @@ void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, unsigned char *sample );
 /* sample poits to 24bit integers */
 void bs2b_cross_feed_24( t_bs2bdp bs2bdp, void *sample );
 
+/* Return bs2b version string */
+char const *bs2b_runtime_version( void );
+
 #ifdef __cplusplus
 }	/* extern "C" */
 #endif /* __cplusplus */

@@ -343,3 +343,8 @@ void bs2b_cross_feed_24( t_bs2bdp bs2bdp, void *sample )
 	double2tribyte( sample_d[ 0 ] * MAX_24BIT_VALUE, sample_1 );
 	double2tribyte( sample_d[ 1 ] * MAX_24BIT_VALUE, sample_2 );
 } /* bs2b_cross_feed_24() */
+
+char const *bs2b_runtime_version( void )
+{
+	return BS2B_VERSION_STR;
+} /* bs2b_runtime_version() */
