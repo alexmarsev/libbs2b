@@ -8,7 +8,8 @@ bin_PROGRAMS = \
 
 bs2b_HEADERS = \
 	bs2b.h \
-	bs2bclass.h
+	bs2bclass.h \
+	bs2bversion.h
 
 bs2bdir = $(includedir)/bs2b
 
