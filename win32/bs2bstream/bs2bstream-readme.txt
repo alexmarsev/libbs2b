@@ -1,0 +1,15 @@
+Bauer stereophonic-to-binaural DSP (bs2b)
+Copyright (c) 2005  Boris Mikhaylov <http://www.tmn.ru/~bor>
+
+The Bauer stereophonic-to-binaural DSP (bs2b) is designed
+to improve headphone listening of stereo audio records.
+Project source code and description is available at
+http://bs2b.sourceforge.net/
+
+bs2bstream.exe - win32 x86 binary.
+
+Applying bs2b effect to standart input of
+44100 Hz 16 bit stereo raw PCM stream.
+Example of usage (with lame):
+  lame -t --decode test-44-16.wav - | bs2bstream -4 | \
+    lame -r -x -m j -s 44.1 --bitwidth 16 --preset extreme - test.mp3
