@@ -113,7 +113,7 @@ int main( int argc, char *argv[] )
 
 	while( 2 == fread( sample, sizeof( short ), 2, stdin ) )
 	{
-		bs2b_cross_feed_16( bs2bdp, sample );
+		bs2b_cross_feed_s16ne( bs2bdp, sample );
 		fwrite( sample, sizeof( short ), 2, stdout );
 	}
 

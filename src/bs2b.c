@@ -30,37 +30,44 @@
 #define M_PI  3.14159265358979323846
 #endif
 
-/* Type for 24bit conversions */
-typedef union int_char
+static double int242double( int24_t *in )
 {
-	long i;
-	struct c { char byte[ 4 ]; } c;
-} t_int_char;
+	int32_t out =
+		( ( uint32_t )in->octet0 ) |
+		( ( uint32_t )in->octet1 << 8 ) |
+		( ( uint32_t )in->octet2 << 16 ) |
+		( ( in->octet2 < 0 ? ( uint32_t )-1 : 0 ) << 24 );
 
-/* Convert 24bit integer to double */
-static double tribyte2double( char *in_24 )
+	return ( double )out;
+} /* int242double() */
+
+static double uint242double( uint24_t *in )
 {
-	t_int_char int_char;
+	uint32_t out =
+		( ( uint32_t )in->octet0 ) |
+		( ( uint32_t )in->octet1 << 8 ) |
+		( ( uint32_t )in->octet2 << 16 );
 
-	int_char.c.byte[ 0 ] = in_24[ 0 ];
-	int_char.c.byte[ 1 ] = in_24[ 1 ];
-	int_char.c.byte[ 2 ] = in_24[ 2 ];
-	int_char.c.byte[ 3 ] = in_24[ 2 ] & 0x80 ? 0xFF : 0x00;
+	return ( double )out;
+} /* uint242double() */
 
-	return ( double )int_char.i;
-} /* tribyte2double() */
-
-/* Convert double to 24bit integer */
-static void double2tribyte( double in_d, char *out_24 )
+static void double2int24( double in, int24_t *out )
 {
-	t_int_char int_char;
+	uint32_t i = ( uint32_t )in;
 
-	int_char.i = ( long )in_d;
+	out->octet0 = i & 0xff;
+	out->octet1 = ( i >> 8 ) & 0xff;
+	out->octet2 = ( i >> 16 ) & 0xff;
+} /* double2int24() */
 
-	out_24[ 0 ] = int_char.c.byte[ 0 ];
-	out_24[ 1 ] = int_char.c.byte[ 1 ];
-	out_24[ 2 ] = int_char.c.byte[ 2 ];
-} /* double2tribyte() */
+static void double2uint24( double in, uint24_t *out )
+{
+	uint32_t i = ( uint32_t )in;
+
+	out->octet0 = i & 0xff;
+	out->octet1 = ( i >> 8 ) & 0xff;
+	out->octet2 = ( i >> 16 ) & 0xff;
+} /* double2uint24() */
 
 /* Set up bs2b data. */
 static void init( t_bs2bdp bs2bdp )
@@ -158,7 +165,7 @@ void bs2b_close( t_bs2bdp bs2bdp )
 	free( bs2bdp );
 } /* bs2b_close() */
 
-void bs2b_set_level( t_bs2bdp bs2bdp, int level )
+void bs2b_set_level( t_bs2bdp bs2bdp, uint32_t level )
 {
 	if( ! bs2bdp ) return;
 
@@ -168,12 +175,12 @@ void bs2b_set_level( t_bs2bdp bs2bdp, int level )
 	init( bs2bdp );
 } /* bs2b_set_level() */
 
-int bs2b_get_level( t_bs2bdp bs2bdp )
+uint32_t bs2b_get_level( t_bs2bdp bs2bdp )
 {
 	return bs2bdp->level;
 } /* bs2b_get_level() */
 
-void bs2b_set_srate( t_bs2bdp bs2bdp, long srate )
+void bs2b_set_srate( t_bs2bdp bs2bdp, uint32_t srate )
 {
 	if( ! bs2bdp ) return;
 
@@ -184,7 +191,7 @@ void bs2b_set_srate( t_bs2bdp bs2bdp, long srate )
 	bs2b_clear( bs2bdp );
 } /* bs2b_set_srate() */
 
-long bs2b_get_srate( t_bs2bdp bs2bdp )
+uint32_t bs2b_get_srate( t_bs2bdp bs2bdp )
 {
 	return bs2bdp->srate;
 } /* bs2b_get_srate() */
@@ -223,7 +230,7 @@ int bs2b_is_clear( t_bs2bdp bs2bdp )
 #define hi_filter( in, in_1, out_1 ) \
 	( bs2bdp->a0_hi * in + bs2bdp->a1_hi * in_1 + bs2bdp->b1_hi * out_1 )
 
-void bs2b_cross_feed( t_bs2bdp bs2bdp, double *sample )
+void bs2b_cross_feed_dne( t_bs2bdp bs2bdp, double *sample )
 {
 	/* Single pole IIR filter.
 	 * O[n] = a0*I[n] + a1*I[n-1] + b1*O[n-1]
@@ -254,95 +261,90 @@ void bs2b_cross_feed( t_bs2bdp bs2bdp, double *sample )
 	if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
 	if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
 	if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
-} /* bs2b_cross_feed() */
+} /* bs2b_cross_feed_dne() */
 
-void bs2b_cross_feed_f32( t_bs2bdp bs2bdp, float *sample )
+void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample )
 {
 	double sample_d[ 2 ];
 
 	sample_d[ 0 ] = ( double )sample[ 0 ];
 	sample_d[ 1 ] = ( double )sample[ 1 ];
 
-	bs2b_cross_feed( bs2bdp, sample_d );
+	bs2b_cross_feed_dne( bs2bdp, sample_d );
 
 	sample[ 0 ] = ( float )sample_d[ 0 ];
 	sample[ 1 ] = ( float )sample_d[ 1 ];
-} /* bs2b_cross_feed_f32() */
+} /* bs2b_cross_feed_fne() */
 
-#define MAX_LONG_VALUE   2147483647.0
-#define MAX_SHORT_VALUE       32767.0
-#define MAX_CHAR_VALUE          127.0
-#define MAX_24BIT_VALUE     8388607.0
+#define MAX_INT32_VALUE  2147483647.0
+#define MAX_INT16_VALUE       32767.0
+#define MAX_INT8_VALUE          127.0
+#define MAX_INT24_VALUE     8388607.0
 
-void bs2b_cross_feed_32( t_bs2bdp bs2bdp, long *sample )
+void bs2b_cross_feed_s32ne( t_bs2bdp bs2bdp, int32_t *sample )
 {
 	double sample_d[ 2 ];
 
-	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_LONG_VALUE;
-	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_LONG_VALUE;
+	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT32_VALUE;
+	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT32_VALUE;
 
-	bs2b_cross_feed( bs2bdp, sample_d );
+	bs2b_cross_feed_dne( bs2bdp, sample_d );
 
-	sample[ 0 ] = ( long )( sample_d[ 0 ] * MAX_LONG_VALUE );
-	sample[ 1 ] = ( long )( sample_d[ 1 ] * MAX_LONG_VALUE );
-} /* bs2b_cross_feed_32 */
+	sample[ 0 ] = ( int32_t )( sample_d[ 0 ] * MAX_INT32_VALUE );
+	sample[ 1 ] = ( int32_t )( sample_d[ 1 ] * MAX_INT32_VALUE );
+} /* bs2b_cross_feed_s32ne() */
 
-void bs2b_cross_feed_16( t_bs2bdp bs2bdp, short *sample )
+void bs2b_cross_feed_s16ne( t_bs2bdp bs2bdp, int16_t *sample )
 {
 	double sample_d[ 2 ];
 
-	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_SHORT_VALUE;
-	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_SHORT_VALUE;
+	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT16_VALUE;
+	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT16_VALUE;
 
-	bs2b_cross_feed( bs2bdp, sample_d );
+	bs2b_cross_feed_dne( bs2bdp, sample_d );
 
-	sample[ 0 ] = ( short )( sample_d[ 0 ] * MAX_SHORT_VALUE );
-	sample[ 1 ] = ( short )( sample_d[ 1 ] * MAX_SHORT_VALUE );
-} /* bs2b_cross_feed_16() */
+	sample[ 0 ] = ( int16_t )( sample_d[ 0 ] * MAX_INT16_VALUE );
+	sample[ 1 ] = ( int16_t )( sample_d[ 1 ] * MAX_INT16_VALUE );
+} /* bs2b_cross_feed_s16ne() */
 
-void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, char *sample )
+void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample )
 {
 	double sample_d[ 2 ];
 
-	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_CHAR_VALUE;
-	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_CHAR_VALUE;
+	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT8_VALUE;
+	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT8_VALUE;
 
-	bs2b_cross_feed( bs2bdp, sample_d );
+	bs2b_cross_feed_dne( bs2bdp, sample_d );
 
-	sample[ 0 ] = ( char )( sample_d[ 0 ] * MAX_CHAR_VALUE );
-	sample[ 1 ] = ( char )( sample_d[ 1 ] * MAX_CHAR_VALUE );
+	sample[ 0 ] = ( int8_t )( sample_d[ 0 ] * MAX_INT8_VALUE );
+	sample[ 1 ] = ( int8_t )( sample_d[ 1 ] * MAX_INT8_VALUE );
 } /* bs2b_cross_feed_s8() */
 
-void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, unsigned char *sample )
+void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample )
 {
 	double sample_d[ 2 ];
 
-	sample_d[ 0 ] = ( ( double )( ( char )( sample[ 0 ] ^ 0x80 ) ) ) / MAX_CHAR_VALUE;
-	sample_d[ 1 ] = ( ( double )( ( char )( sample[ 1 ] ^ 0x80 ) ) ) / MAX_CHAR_VALUE;
+	sample_d[ 0 ] = ( ( double )( ( int8_t )( sample[ 0 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
+	sample_d[ 1 ] = ( ( double )( ( int8_t )( sample[ 1 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
 
-	bs2b_cross_feed( bs2bdp, sample_d );
+	bs2b_cross_feed_dne( bs2bdp, sample_d );
 
-	sample[ 0 ] = ( ( unsigned char )( sample_d[ 0 ] * MAX_CHAR_VALUE ) ) ^ 0x80;
-	sample[ 1 ] = ( ( unsigned char )( sample_d[ 1 ] * MAX_CHAR_VALUE ) ) ^ 0x80;
+	sample[ 0 ] = ( ( uint8_t )( sample_d[ 0 ] * MAX_INT8_VALUE ) ) ^ 0x80;
+	sample[ 1 ] = ( ( uint8_t )( sample_d[ 1 ] * MAX_INT8_VALUE ) ) ^ 0x80;
 } /* bs2b_cross_feed_u8() */
 
-void bs2b_cross_feed_24( t_bs2bdp bs2bdp, void *sample )
+void bs2b_cross_feed_s24ne( t_bs2bdp bs2bdp, int24_t *sample )
 {
 	double sample_d[ 2 ];
-	char  *sample_1 = sample;
-	char  *sample_2 = sample_1 + 3;
 
-	sample_d[ 0 ] = tribyte2double( sample_1 );
-	sample_d[ 1 ] = tribyte2double( sample_2 );
+	sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
+	sample_d[ 1 ] = int242double( sample + 1 ) / MAX_INT24_VALUE;
 
-	sample_d[ 0 ] /= MAX_24BIT_VALUE;
-	sample_d[ 1 ] /= MAX_24BIT_VALUE;
+	bs2b_cross_feed_dne( bs2bdp, sample_d );
 
-	bs2b_cross_feed( bs2bdp, sample_d );
-
-	double2tribyte( sample_d[ 0 ] * MAX_24BIT_VALUE, sample_1 );
-	double2tribyte( sample_d[ 1 ] * MAX_24BIT_VALUE, sample_2 );
-} /* bs2b_cross_feed_24() */
+	double2int24( sample_d[ 0 ] * MAX_INT24_VALUE, sample );
+	double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
+} /* bs2b_cross_feed_s24ne() */
 
 char const *bs2b_runtime_version( void )
 {

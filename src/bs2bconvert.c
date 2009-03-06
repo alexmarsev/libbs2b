@@ -198,7 +198,7 @@ static void copy_data( SNDFILE *outfile, SNDFILE *infile, t_bs2bdp bs2bdp )
 		readcount = (int)sf_read_double( infile, data, items );
 
 		for( k = 0; k < readcount; k += 2 )
-			bs2b_cross_feed( bs2bdp, data + k );
+			bs2b_cross_feed_dne( bs2bdp, data + k );
 
 		sf_write_double( outfile, data, readcount );
 	}

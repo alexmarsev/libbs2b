@@ -21,8 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef BS2BCLASS_H
-#define BS2BCLASS_H
+#ifndef _BS2BCLASS_H_
+#define _BS2BCLASS_H_
 
 #include "bs2b.h"
 
@@ -35,20 +35,20 @@ public:
 	bs2b_base();
 	~bs2b_base();
 
-	void set_level( int level );
-	int  get_level();
-	void set_srate( long srate );
-	long get_srate();
-	void clear();
-	bool is_clear();
+	void      set_level( uint32_t level );
+	uint32_t  get_level();
+	void      set_srate( uint32_t srate );
+	uint32_t  get_srate();
+	void      clear();
+	bool      is_clear();
 
-	void cross_feed( double *sample );
-	void cross_feed( float *sample );
-	void cross_feed( long *sample );
-	void cross_feed( short *sample );
-	void cross_feed( char *sample );
-	void cross_feed( unsigned char *sample );
-	void cross_feed( void *sample );
+	void cross_feed( double   *sample );
+	void cross_feed( float    *sample );
+	void cross_feed( int32_t  *sample );
+	void cross_feed( int16_t  *sample );
+	void cross_feed( int8_t   *sample );
+	void cross_feed( uint8_t  *sample );
+	void cross_feed( int24_t  *sample );
 }; // class bs2b_base
 
-#endif // BS2BCLASS_H
+#endif // _BS2BCLASS_H_

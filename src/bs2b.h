@@ -21,10 +21,56 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef BS2B_H
-#define BS2B_H
+#ifndef _BS2B_H_
+#define _BS2B_H_
+
+#include <limits.h>
 
 #include "bs2bversion.h"
+
+#if HAVE_STDINT_H
+#include <stdint.h>
+#elif UINT_MAX == 0xffff /* 16 bit compiler */
+typedef signed   char    int8_t;
+typedef signed   short   int16_t;
+typedef signed   long    int32_t;
+typedef unsigned char    uint8_t;
+typedef unsigned short   uint16_t;
+typedef unsigned long    uint32_t;
+#else /* UINT_MAX != 0xffff */ /* 32/64 bit compiler */
+typedef signed   char    int8_t;
+typedef signed   short   int16_t;
+typedef signed   int     int32_t;
+typedef unsigned char    uint8_t;
+typedef unsigned short   uint16_t;
+typedef unsigned int     uint32_t;
+#endif /* HAVE_STDINT_H */
+
+typedef struct
+{
+#ifdef WORDS_BIGENDIAN
+	int8_t  octet2;
+	uint8_t octet1;
+	uint8_t octet0;
+#else
+	uint8_t octet0;
+	uint8_t octet1;
+	int8_t  octet2;
+#endif /* WORDS_BIGENDIAN */
+} int24_t;
+
+typedef struct
+{
+#ifdef WORDS_BIGENDIAN
+	uint8_t octet2;
+	uint8_t octet1;
+	uint8_t octet0;
+#else
+	uint8_t octet0;
+	uint8_t octet1;
+	uint8_t octet2;
+#endif /* WORDS_BIGENDIAN */
+} uint24_t;
 
 /* Number of crossfeed levels */
 #define BS2B_CLEVELS           3
@@ -46,8 +92,8 @@
 
 typedef struct
 {
-	long level;                  /* Crossfeed level */
-	long srate;                  /* Sample rate (Hz) */
+	uint32_t level;              /* Crossfeed level */
+	uint32_t srate;              /* Sample rate (Hz) */
 	double a0_lo, b1_lo;         /* Lowpass IIR filter coefficients */
 	double a0_hi, a1_hi, b1_hi;  /* Highboost IIR filter coefficients */
 	double gain;                 /* Global gain against overloading */
@@ -73,18 +119,18 @@ void bs2b_close( t_bs2bdp bs2bdp );
 /* Sets a new coefficients with new crossfeed level value.
  * level - crossfeed level of *LEVEL values.
  */
-void bs2b_set_level( t_bs2bdp bs2bdp, int level );
+void bs2b_set_level( t_bs2bdp bs2bdp, uint32_t level );
 
 /* Return current crossfeed level value */
-int bs2b_get_level( t_bs2bdp bs2bdp );
+uint32_t bs2b_get_level( t_bs2bdp bs2bdp );
 
 /* Clear buffers and sets a new coefficients with new sample rate value.
  * srate - sample rate by Hz.
  */
-void bs2b_set_srate( t_bs2bdp bs2bdp, long srate );
+void bs2b_set_srate( t_bs2bdp bs2bdp, uint32_t srate );
 
 /* Return current sample rate value */
-long bs2b_get_srate( t_bs2bdp bs2bdp );
+uint32_t bs2b_get_srate( t_bs2bdp bs2bdp );
 
 /* Clear buffer */
 void bs2b_clear( t_bs2bdp bs2bdp );
@@ -97,26 +143,26 @@ int bs2b_is_clear( t_bs2bdp bs2bdp );
  * Returns crossfided samle by sample pointer.
  */
 
-/* sample poits to double floats */
-void bs2b_cross_feed( t_bs2bdp bs2bdp, double *sample );
+/* sample poits to double floats native endians */
+void bs2b_cross_feed_dne( t_bs2bdp bs2bdp, double *sample );
 
-/* sample poits to floats */
-void bs2b_cross_feed_f32( t_bs2bdp bs2bdp, float *sample );
+/* sample poits to floats native endians */
+void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample );
 
-/* sample poits to 32bit integers */
-void bs2b_cross_feed_32( t_bs2bdp bs2bdp, long *sample );
+/* sample poits to 32bit signed integers native endians */
+void bs2b_cross_feed_s32ne( t_bs2bdp bs2bdp, int32_t *sample );
 
-/* sample poits to 16bit integers */
-void bs2b_cross_feed_16( t_bs2bdp bs2bdp, short *sample );
+/* sample poits to 16bit signed integers native endians */
+void bs2b_cross_feed_s16ne( t_bs2bdp bs2bdp, int16_t *sample );
 
-/* sample poits to 8bit integers */
-void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, char *sample );
+/* sample poits to 8bit signed integers */
+void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample );
 
 /* sample poits to 8bit unsigned integers */
-void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, unsigned char *sample );
+void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample );
 
-/* sample poits to 24bit integers */
-void bs2b_cross_feed_24( t_bs2bdp bs2bdp, void *sample );
+/* sample poits to 24bit signed integers native endians */
+void bs2b_cross_feed_s24ne( t_bs2bdp bs2bdp, int24_t *sample );
 
 /* Return bs2b version string */
 char const *bs2b_runtime_version( void );
@@ -125,4 +171,4 @@ char const *bs2b_runtime_version( void );
 }	/* extern "C" */
 #endif /* __cplusplus */
 
-#endif	/* BS2B_H */
+#endif	/* _BS2B_H_ */

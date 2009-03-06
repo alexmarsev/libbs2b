@@ -33,22 +33,22 @@ bs2b_base::~bs2b_base()
 	bs2b_close( bs2bdp );
 }
 
-void bs2b_base::set_level( int level )
+void bs2b_base::set_level( uint32_t level )
 {
 	bs2b_set_level( bs2bdp, level );
 }
 
-int bs2b_base::get_level()
+uint32_t bs2b_base::get_level()
 {
 	return bs2b_get_level( bs2bdp );
 }
 
-void bs2b_base::set_srate( long srate )
+void bs2b_base::set_srate( uint32_t srate )
 {
 	bs2b_set_srate( bs2bdp, srate );
 }
 
-long bs2b_base::get_srate()
+uint32_t bs2b_base::get_srate()
 {
 	return bs2b_get_srate( bs2bdp );
 }
@@ -65,35 +65,35 @@ bool bs2b_base::is_clear()
 
 void bs2b_base::cross_feed( double *sample )
 {
-	bs2b_cross_feed( bs2bdp, sample );
+	bs2b_cross_feed_dne( bs2bdp, sample );
 }
 
 void bs2b_base::cross_feed( float *sample )
 {
-	bs2b_cross_feed_f32( bs2bdp, sample );
+	bs2b_cross_feed_fne( bs2bdp, sample );
 }
 
-void bs2b_base::cross_feed( long *sample )
+void bs2b_base::cross_feed( int32_t *sample )
 {
-	bs2b_cross_feed_32( bs2bdp, sample );
+	bs2b_cross_feed_s32ne( bs2bdp, sample );
 }
 
-void bs2b_base::cross_feed( short *sample )
+void bs2b_base::cross_feed( int16_t *sample )
 {
-	bs2b_cross_feed_16( bs2bdp, sample );
+	bs2b_cross_feed_s16ne( bs2bdp, sample );
 }
 
-void bs2b_base::cross_feed( char *sample )
+void bs2b_base::cross_feed( int8_t *sample )
 {
 	bs2b_cross_feed_s8( bs2bdp, sample );
 }
 
-void bs2b_base::cross_feed( unsigned char *sample )
+void bs2b_base::cross_feed( uint8_t *sample )
 {
 	bs2b_cross_feed_u8( bs2bdp, sample );
 }
 
-void bs2b_base::cross_feed( void *sample )
+void bs2b_base::cross_feed( int24_t *sample )
 {
-	bs2b_cross_feed_24( bs2bdp, sample );
+	bs2b_cross_feed_s24ne( bs2bdp, sample );
 }
