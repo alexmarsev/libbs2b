@@ -21,8 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _BS2B_H_
-#define _BS2B_H_
+#ifndef BS2B_H
+#define BS2B_H
 
 #include <limits.h>
 
@@ -169,4 +169,4 @@ char const *bs2b_runtime_version( void );
 }	/* extern "C" */
 #endif /* __cplusplus */
 
-#endif	/* _BS2B_H_ */
+#endif	/* BS2B_H */

@@ -21,8 +21,8 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef _BS2BCLASS_H_
-#define _BS2BCLASS_H_
+#ifndef BS2BCLASS_H
+#define BS2BCLASS_H
 
 #include "bs2b.h"
 
@@ -51,4 +51,4 @@ public:
 	void cross_feed( int24_t  *sample );
 }; // class bs2b_base
 
-#endif // _BS2BCLASS_H_
+#endif // BS2BCLASS_H
