@@ -29,21 +29,19 @@
 #include "bs2bversion.h"
 
 #if HAVE_STDINT_H
-#include <stdint.h>
-#elif UINT_MAX == 0xffff /* 16 bit compiler */
+# include <stdint.h>
+#else
 typedef signed   char    int8_t;
+typedef unsigned char    uint8_t;
 typedef signed   short   int16_t;
+typedef unsigned short   uint16_t;
+# if UINT_MAX == 0xffff /* 16 bit compiler */
 typedef signed   long    int32_t;
-typedef unsigned char    uint8_t;
-typedef unsigned short   uint16_t;
 typedef unsigned long    uint32_t;
-#else /* UINT_MAX != 0xffff */ /* 32/64 bit compiler */
-typedef signed   char    int8_t;
-typedef signed   short   int16_t;
+# else /* UINT_MAX != 0xffff */ /* 32/64 bit compiler */
 typedef signed   int     int32_t;
-typedef unsigned char    uint8_t;
-typedef unsigned short   uint16_t;
 typedef unsigned int     uint32_t;
+# endif
 #endif /* HAVE_STDINT_H */
 
 typedef struct
