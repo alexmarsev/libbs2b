@@ -23,9 +23,9 @@
 
 #include <stdio.h>
 #include <string.h>
-
-#if defined(WIN32) || defined(__WIN32) || defined(__WIN32__)
 #include <fcntl.h>
+
+#if defined(_O_BINARY) || defined(_O_RAW)
 #include <io.h>
 #endif
 
@@ -106,7 +106,7 @@ int main( int argc, char *argv[] )
 	bs2b_set_srate( bs2bdp, srate );
 	bs2b_set_level( bs2bdp, level );
 
-#if defined(WIN32) || defined(__WIN32) || defined(__WIN32__)
+#if defined(_O_BINARY) || defined(_O_RAW)
 	_setmode( _fileno( stdin ),  _O_BINARY );
 	_setmode( _fileno( stdout ), _O_BINARY );
 #endif
