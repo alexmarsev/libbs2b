@@ -55,8 +55,8 @@ int main( int argc, char *argv[] )
 	SNDFILE  *infile = NULL, *outfile = NULL;
 	SF_INFO  sfinfo;
 	t_bs2bdp bs2bdp;
-	long     srate;
-	int      level;
+	uint32_t srate;
+	uint32_t level;
 
 	tmpstr = strrchr( argv[ 0 ], '/' );
 	tmpstr = tmpstr ? tmpstr + 1 : argv[ 0 ];
@@ -140,7 +140,7 @@ int main( int argc, char *argv[] )
 	{
 		char *levels[] = { "low", "middle", "high", "low easy", "middle easy", "high easy" };
 
-		printf( "Converting file %s to file %s\nsample rate=%li, crossfeed level=%s...",
+		printf( "Converting file %s to file %s\nsample rate=%u, crossfeed level=%s...",
 			infilename, outfilename, srate, levels[ level - 1 ] );
 	}
 
@@ -188,20 +188,13 @@ static void copy_metadata( SNDFILE *outfile, SNDFILE *infile )
 static void copy_data( SNDFILE *outfile, SNDFILE *infile, t_bs2bdp bs2bdp )
 {
 	static double data[ BUFFER_LEN ];
-	int items, readcount, k;
+	int readcount;
 
-	items = BUFFER_LEN;
-	readcount = items;
-
-	while( readcount > 0 )
+	for( ;; )
 	{
-		readcount = (int)sf_read_double( infile, data, items );
-
-		for( k = 0; k < readcount; k += 2 )
-			bs2b_cross_feed_dne( bs2bdp, data + k );
-
+		readcount = ( int )sf_read_double( infile, data, BUFFER_LEN );
+		if( readcount < 2 ) break;
+		bs2b_cross_feed_dne( bs2bdp, data, readcount / 2 );
 		sf_write_double( outfile, data, readcount );
 	}
-
-	return;
 } /* copy_data() */

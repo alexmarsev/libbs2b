@@ -1,3 +1,6 @@
+2009-03-11 Boris Mikhaylov <http://www.tmn.ru/~bor>
+	* Changed processing from one stereo sample to more.
+
 2009-03-06 Boris Mikhaylov <http://www.tmn.ru/~bor>
 	* libsndfile v1.0.17 -> v1.0.19.
 	* Added more systems compatability (Integer types changed).

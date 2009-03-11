@@ -63,37 +63,42 @@ bool bs2b_base::is_clear()
 	return( bs2b_is_clear( bs2bdp ) ? true : false );
 }
 
-void bs2b_base::cross_feed( double *sample )
+char const *bs2b_base::runtime_version( void )
 {
-	bs2b_cross_feed_dne( bs2bdp, sample );
+	return bs2b_runtime_version();
 }
 
-void bs2b_base::cross_feed( float *sample )
+void bs2b_base::cross_feed( double *sample, int n )
 {
-	bs2b_cross_feed_fne( bs2bdp, sample );
+	bs2b_cross_feed_dne( bs2bdp, sample, n );
 }
 
-void bs2b_base::cross_feed( int32_t *sample )
+void bs2b_base::cross_feed( float *sample, int n )
 {
-	bs2b_cross_feed_s32ne( bs2bdp, sample );
+	bs2b_cross_feed_fne( bs2bdp, sample, n );
 }
 
-void bs2b_base::cross_feed( int16_t *sample )
+void bs2b_base::cross_feed( int32_t *sample, int n )
 {
-	bs2b_cross_feed_s16ne( bs2bdp, sample );
+	bs2b_cross_feed_s32ne( bs2bdp, sample, n );
 }
 
-void bs2b_base::cross_feed( int8_t *sample )
+void bs2b_base::cross_feed( int16_t *sample, int n )
 {
-	bs2b_cross_feed_s8( bs2bdp, sample );
+	bs2b_cross_feed_s16ne( bs2bdp, sample, n );
 }
 
-void bs2b_base::cross_feed( uint8_t *sample )
+void bs2b_base::cross_feed( int8_t *sample, int n )
 {
-	bs2b_cross_feed_u8( bs2bdp, sample );
+	bs2b_cross_feed_s8( bs2bdp, sample, n );
 }
 
-void bs2b_base::cross_feed( int24_t *sample )
+void bs2b_base::cross_feed( uint8_t *sample, int n )
 {
-	bs2b_cross_feed_s24ne( bs2bdp, sample );
+	bs2b_cross_feed_u8( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed( int24_t *sample, int n )
+{
+	bs2b_cross_feed_s24ne( bs2bdp, sample, n );
 }

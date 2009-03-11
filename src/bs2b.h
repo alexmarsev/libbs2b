@@ -29,19 +29,19 @@
 #include "bs2bversion.h"
 
 #if HAVE_STDINT_H
-# include <stdint.h>
+#include <stdint.h>
 #else
 typedef signed   char    int8_t;
 typedef unsigned char    uint8_t;
 typedef signed   short   int16_t;
 typedef unsigned short   uint16_t;
-# if UINT_MAX == 0xffff /* 16 bit compiler */
+#if UINT_MAX == 0xffff /* 16 bit compiler */
 typedef signed   long    int32_t;
 typedef unsigned long    uint32_t;
-# else /* UINT_MAX != 0xffff */ /* 32/64 bit compiler */
+#else /* UINT_MAX != 0xffff */ /* 32/64 bit compiler */
 typedef signed   int     int32_t;
 typedef unsigned int     uint32_t;
-# endif
+#endif
 #endif /* HAVE_STDINT_H */
 
 typedef struct
@@ -136,34 +136,36 @@ void bs2b_clear( t_bs2bdp bs2bdp );
 /* Return 1 if buffer is clear */
 int bs2b_is_clear( t_bs2bdp bs2bdp );
 
-/* Crossfeeds one stereo sample that are pointed by sample.
- * [0] - first channel, [1] - second channel.
- * Returns crossfided samle by sample pointer.
+/* Return bs2b version string */
+char const *bs2b_runtime_version( void );
+
+/* 'bs2b_cross_feed_*' crossfeeds buffer of 'n' stereo samples
+ * pointed by 'sample'.
+ * sample[i]   - first channel,
+ * sample[i+1] - second channel.
+ * Where 'i' is ( i = 0; i < n * 2; i += 2 )
  */
 
 /* sample poits to double floats native endians */
-void bs2b_cross_feed_dne( t_bs2bdp bs2bdp, double *sample );
+void bs2b_cross_feed_dne( t_bs2bdp bs2bdp, double *sample, int n );
 
 /* sample poits to floats native endians */
-void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample );
+void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample, int n );
 
 /* sample poits to 32bit signed integers native endians */
-void bs2b_cross_feed_s32ne( t_bs2bdp bs2bdp, int32_t *sample );
+void bs2b_cross_feed_s32ne( t_bs2bdp bs2bdp, int32_t *sample, int n );
 
 /* sample poits to 16bit signed integers native endians */
-void bs2b_cross_feed_s16ne( t_bs2bdp bs2bdp, int16_t *sample );
+void bs2b_cross_feed_s16ne( t_bs2bdp bs2bdp, int16_t *sample, int n );
 
 /* sample poits to 8bit signed integers */
-void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample );
+void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample, int n );
 
 /* sample poits to 8bit unsigned integers */
-void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample );
+void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample, int n );
 
 /* sample poits to 24bit signed integers native endians */
-void bs2b_cross_feed_s24ne( t_bs2bdp bs2bdp, int24_t *sample );
-
-/* Return bs2b version string */
-char const *bs2b_runtime_version( void );
+void bs2b_cross_feed_s24ne( t_bs2bdp bs2bdp, int24_t *sample, int n );
 
 #ifdef __cplusplus
 }	/* extern "C" */

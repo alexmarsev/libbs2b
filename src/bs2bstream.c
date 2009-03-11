@@ -25,7 +25,7 @@
 #include <string.h>
 #include <fcntl.h>
 
-#if defined(_O_BINARY) || defined(_O_RAW)
+#if defined( _O_BINARY ) || defined( _O_RAW )
 #include <io.h>
 #endif
 
@@ -50,8 +50,8 @@ int main( int argc, char *argv[] )
 {
 	t_bs2bdp bs2bdp;
 	char     *progname, *tmpstr;
-	long     srate;
-	int      level;
+	uint32_t srate;
+	uint32_t level;
 	short    sample[ 2 ];
 
 	tmpstr = strrchr( argv[0], '/' );
@@ -99,21 +99,24 @@ int main( int argc, char *argv[] )
 		} /* switch */
 	}
 
-	srate = 44100L;
+	srate = 44100;
 
 	bs2bdp = bs2b_open();
 
 	bs2b_set_srate( bs2bdp, srate );
 	bs2b_set_level( bs2bdp, level );
 
-#if defined(_O_BINARY) || defined(_O_RAW)
+#if defined( _O_BINARY )
 	_setmode( _fileno( stdin ),  _O_BINARY );
 	_setmode( _fileno( stdout ), _O_BINARY );
+#elif defined( _O_RAW )
+	_setmode( _fileno( stdin ),  _O_RAW );
+	_setmode( _fileno( stdout ), _O_RAW );
 #endif
 
 	while( 2 == fread( sample, sizeof( short ), 2, stdin ) )
 	{
-		bs2b_cross_feed_s16ne( bs2bdp, sample );
+		bs2b_cross_feed_s16ne( bs2bdp, sample, 1 );
 		fwrite( sample, sizeof( short ), 2, stdout );
 	}
 

@@ -143,6 +143,47 @@ static void init( t_bs2bdp bs2bdp )
 	bs2bdp->gain  = 1.0 / ( 1.0 - G_hi + G_lo );
 } /* init() */
 
+/* Single pole IIR filter.
+ * O[n] = a0*I[n] + a1*I[n-1] + b1*O[n-1]
+ */
+
+/* Lowpass filter */
+#define lo_filter( in, out_1 ) \
+	( bs2bdp->a0_lo * in + bs2bdp->b1_lo * out_1 )
+
+/* Highboost filter */
+#define hi_filter( in, in_1, out_1 ) \
+	( bs2bdp->a0_hi * in + bs2bdp->a1_hi * in_1 + bs2bdp->b1_hi * out_1 )
+
+static void cross_feed_dne( t_bs2bdp bs2bdp, double *sample )
+{
+	/* Lowpass filter */
+	bs2bdp->lfs.lo[ 0 ] = lo_filter( sample[ 0 ], bs2bdp->lfs.lo[ 0 ] );
+	bs2bdp->lfs.lo[ 1 ] = lo_filter( sample[ 1 ], bs2bdp->lfs.lo[ 1 ] );
+
+	/* Highboost filter */
+	bs2bdp->lfs.hi[ 0 ] =
+		hi_filter( sample[ 0 ], bs2bdp->lfs.asis[ 0 ], bs2bdp->lfs.hi[ 0 ] );
+	bs2bdp->lfs.hi[ 1 ] =
+		hi_filter( sample[ 1 ], bs2bdp->lfs.asis[ 1 ], bs2bdp->lfs.hi[ 1 ] );
+	bs2bdp->lfs.asis[ 0 ] = sample[ 0 ];
+	bs2bdp->lfs.asis[ 1 ] = sample[ 1 ];
+
+	/* Crossfeed */
+	sample[ 0 ] = bs2bdp->lfs.hi[ 0 ] + bs2bdp->lfs.lo[ 1 ];
+	sample[ 1 ] = bs2bdp->lfs.hi[ 1 ] + bs2bdp->lfs.lo[ 0 ];
+
+	/* Bass boost cause allpass attenuation */
+	sample[ 0 ] *= bs2bdp->gain;
+	sample[ 1 ] *= bs2bdp->gain;
+
+	/* Clipping of overloaded samples */
+	if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
+	if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
+	if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
+	if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
+} /* cross_feed_dne() */
+
 /* Exported functions.
  * See descriptions in "bs2b.h"
  */
@@ -222,58 +263,40 @@ int bs2b_is_clear( t_bs2bdp bs2bdp )
 	return 1;
 } /* bs2b_is_clear() */
 
-/* Lowpass filter */
-#define lo_filter( in, out_1 ) \
-	( bs2bdp->a0_lo * in + bs2bdp->b1_lo * out_1 )
-
-/* Highboost filter */
-#define hi_filter( in, in_1, out_1 ) \
-	( bs2bdp->a0_hi * in + bs2bdp->a1_hi * in_1 + bs2bdp->b1_hi * out_1 )
-
-void bs2b_cross_feed_dne( t_bs2bdp bs2bdp, double *sample )
+char const *bs2b_runtime_version( void )
 {
-	/* Single pole IIR filter.
-	 * O[n] = a0*I[n] + a1*I[n-1] + b1*O[n-1]
-	 */
+	return BS2B_VERSION_STR;
+} /* bs2b_runtime_version() */
 
-	/* Lowpass filter */
-	bs2bdp->lfs.lo[ 0 ] = lo_filter( sample[ 0 ], bs2bdp->lfs.lo[ 0 ] );
-	bs2bdp->lfs.lo[ 1 ] = lo_filter( sample[ 1 ], bs2bdp->lfs.lo[ 1 ] );
+void bs2b_cross_feed_dne( t_bs2bdp bs2bdp, double *sample, int n )
+{
+	if( n <= 0 ) return;
 
-	/* Highboost filter */
-	bs2bdp->lfs.hi[ 0 ] =
-		hi_filter( sample[ 0 ], bs2bdp->lfs.asis[ 0 ], bs2bdp->lfs.hi[ 0 ] );
-	bs2bdp->lfs.hi[ 1 ] =
-		hi_filter( sample[ 1 ], bs2bdp->lfs.asis[ 1 ], bs2bdp->lfs.hi[ 1 ] );
-	bs2bdp->lfs.asis[ 0 ] = sample[ 0 ];
-	bs2bdp->lfs.asis[ 1 ] = sample[ 1 ];
-
-	/* Crossfeed */
-	sample[ 0 ] = bs2bdp->lfs.hi[ 0 ] + bs2bdp->lfs.lo[ 1 ];
-	sample[ 1 ] = bs2bdp->lfs.hi[ 1 ] + bs2bdp->lfs.lo[ 0 ];
-
-	/* Bass boost cause allpass attenuation */
-	sample[ 0 ] *= bs2bdp->gain;
-	sample[ 1 ] *= bs2bdp->gain;
-
-	/* Clipping of overloaded samples */
-	if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
-	if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
-	if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
-	if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
+	while( n-- )
+	{
+		cross_feed_dne( bs2bdp, sample );
+		sample += 2;
+	} /* while */
 } /* bs2b_cross_feed_dne() */
 
-void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample )
+void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample, int n )
 {
-	double sample_d[ 2 ];
+	if( n <= 0 ) return;
 
-	sample_d[ 0 ] = ( double )sample[ 0 ];
-	sample_d[ 1 ] = ( double )sample[ 1 ];
+	while( n-- )
+	{
+		double sample_d[ 2 ];
 
-	bs2b_cross_feed_dne( bs2bdp, sample_d );
+		sample_d[ 0 ] = ( double )sample[ 0 ];
+		sample_d[ 1 ] = ( double )sample[ 1 ];
 
-	sample[ 0 ] = ( float )sample_d[ 0 ];
-	sample[ 1 ] = ( float )sample_d[ 1 ];
+		cross_feed_dne( bs2bdp, sample_d );
+
+		sample[ 0 ] = ( float )sample_d[ 0 ];
+		sample[ 1 ] = ( float )sample_d[ 1 ];
+
+		sample += 2;
+	} /* while */
 } /* bs2b_cross_feed_fne() */
 
 #define MAX_INT32_VALUE  2147483647.0
@@ -281,72 +304,102 @@ void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample )
 #define MAX_INT8_VALUE          127.0
 #define MAX_INT24_VALUE     8388607.0
 
-void bs2b_cross_feed_s32ne( t_bs2bdp bs2bdp, int32_t *sample )
+void bs2b_cross_feed_s32ne( t_bs2bdp bs2bdp, int32_t *sample, int n )
 {
-	double sample_d[ 2 ];
+	if( n <= 0 ) return;
 
-	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT32_VALUE;
-	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT32_VALUE;
+	while( n-- )
+	{
+		double sample_d[ 2 ];
 
-	bs2b_cross_feed_dne( bs2bdp, sample_d );
+		sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT32_VALUE;
+		sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT32_VALUE;
 
-	sample[ 0 ] = ( int32_t )( sample_d[ 0 ] * MAX_INT32_VALUE );
-	sample[ 1 ] = ( int32_t )( sample_d[ 1 ] * MAX_INT32_VALUE );
+		cross_feed_dne( bs2bdp, sample_d );
+
+		sample[ 0 ] = ( int32_t )( sample_d[ 0 ] * MAX_INT32_VALUE );
+		sample[ 1 ] = ( int32_t )( sample_d[ 1 ] * MAX_INT32_VALUE );
+
+		sample += 2;
+	} /* while */
 } /* bs2b_cross_feed_s32ne() */
 
-void bs2b_cross_feed_s16ne( t_bs2bdp bs2bdp, int16_t *sample )
+void bs2b_cross_feed_s16ne( t_bs2bdp bs2bdp, int16_t *sample, int n )
 {
-	double sample_d[ 2 ];
+	if( n <= 0 ) return;
 
-	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT16_VALUE;
-	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT16_VALUE;
+	while( n-- )
+	{
+		double sample_d[ 2 ];
 
-	bs2b_cross_feed_dne( bs2bdp, sample_d );
+		sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT16_VALUE;
+		sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT16_VALUE;
 
-	sample[ 0 ] = ( int16_t )( sample_d[ 0 ] * MAX_INT16_VALUE );
-	sample[ 1 ] = ( int16_t )( sample_d[ 1 ] * MAX_INT16_VALUE );
+		cross_feed_dne( bs2bdp, sample_d );
+
+		sample[ 0 ] = ( int16_t )( sample_d[ 0 ] * MAX_INT16_VALUE );
+		sample[ 1 ] = ( int16_t )( sample_d[ 1 ] * MAX_INT16_VALUE );
+
+		sample += 2;
+	} /* while */
 } /* bs2b_cross_feed_s16ne() */
 
-void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample )
+void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample, int n )
 {
-	double sample_d[ 2 ];
+	if( n <= 0 ) return;
 
-	sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT8_VALUE;
-	sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT8_VALUE;
+	while( n-- )
+	{
+		double sample_d[ 2 ];
 
-	bs2b_cross_feed_dne( bs2bdp, sample_d );
+		sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT8_VALUE;
+		sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT8_VALUE;
 
-	sample[ 0 ] = ( int8_t )( sample_d[ 0 ] * MAX_INT8_VALUE );
-	sample[ 1 ] = ( int8_t )( sample_d[ 1 ] * MAX_INT8_VALUE );
+		cross_feed_dne( bs2bdp, sample_d );
+
+		sample[ 0 ] = ( int8_t )( sample_d[ 0 ] * MAX_INT8_VALUE );
+		sample[ 1 ] = ( int8_t )( sample_d[ 1 ] * MAX_INT8_VALUE );
+
+		sample += 2;
+	} /* while */
 } /* bs2b_cross_feed_s8() */
 
-void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample )
+void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample, int n )
 {
-	double sample_d[ 2 ];
+	if( n <= 0 ) return;
 
-	sample_d[ 0 ] = ( ( double )( ( int8_t )( sample[ 0 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
-	sample_d[ 1 ] = ( ( double )( ( int8_t )( sample[ 1 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
+	while( n-- )
+	{
+		double sample_d[ 2 ];
 
-	bs2b_cross_feed_dne( bs2bdp, sample_d );
+		sample_d[ 0 ] = ( ( double )( ( int8_t )( sample[ 0 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
+		sample_d[ 1 ] = ( ( double )( ( int8_t )( sample[ 1 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
 
-	sample[ 0 ] = ( ( uint8_t )( sample_d[ 0 ] * MAX_INT8_VALUE ) ) ^ 0x80;
-	sample[ 1 ] = ( ( uint8_t )( sample_d[ 1 ] * MAX_INT8_VALUE ) ) ^ 0x80;
+		cross_feed_dne( bs2bdp, sample_d );
+
+		sample[ 0 ] = ( ( uint8_t )( sample_d[ 0 ] * MAX_INT8_VALUE ) ) ^ 0x80;
+		sample[ 1 ] = ( ( uint8_t )( sample_d[ 1 ] * MAX_INT8_VALUE ) ) ^ 0x80;
+
+		sample += 2;
+	} /* while */
 } /* bs2b_cross_feed_u8() */
 
-void bs2b_cross_feed_s24ne( t_bs2bdp bs2bdp, int24_t *sample )
+void bs2b_cross_feed_s24ne( t_bs2bdp bs2bdp, int24_t *sample, int n )
 {
+	if( n <= 0 ) return;
+
+	while( n-- )
+	{
 	double sample_d[ 2 ];
 
-	sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
-	sample_d[ 1 ] = int242double( sample + 1 ) / MAX_INT24_VALUE;
+		sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
+		sample_d[ 1 ] = int242double( sample + 1 ) / MAX_INT24_VALUE;
 
-	bs2b_cross_feed_dne( bs2bdp, sample_d );
+		cross_feed_dne( bs2bdp, sample_d );
 
-	double2int24( sample_d[ 0 ] * MAX_INT24_VALUE, sample );
-	double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
+		double2int24( sample_d[ 0 ] * MAX_INT24_VALUE, sample );
+		double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
+
+		sample += 2;
+	} /* while */
 } /* bs2b_cross_feed_s24ne() */
-
-char const *bs2b_runtime_version( void )
-{
-	return BS2B_VERSION_STR;
-} /* bs2b_runtime_version() */
