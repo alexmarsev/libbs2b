@@ -1,3 +1,6 @@
+2009-03-17 Boris Mikhaylov <http://www.tmn.ru/~bor>
+	* Added handling of big/little endian buffers.
+
 2009-03-11 Boris Mikhaylov <http://www.tmn.ru/~bor>
 	* Changed processing from one stereo sample to more.
 

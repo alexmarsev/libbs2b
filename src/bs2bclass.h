@@ -50,6 +50,22 @@ public:
 	void cross_feed( int8_t   *sample, int n = 1 );
 	void cross_feed( uint8_t  *sample, int n = 1 );
 	void cross_feed( int24_t  *sample, int n = 1 );
+
+	void cross_feed_be( double   *sample, int n = 1 );
+	void cross_feed_be( float    *sample, int n = 1 );
+	void cross_feed_be( int32_t  *sample, int n = 1 );
+	void cross_feed_be( int16_t  *sample, int n = 1 );
+	void cross_feed_be( int8_t   *sample, int n = 1 );
+	void cross_feed_be( uint8_t  *sample, int n = 1 );
+	void cross_feed_be( int24_t  *sample, int n = 1 );
+
+	void cross_feed_le( double   *sample, int n = 1 );
+	void cross_feed_le( float    *sample, int n = 1 );
+	void cross_feed_le( int32_t  *sample, int n = 1 );
+	void cross_feed_le( int16_t  *sample, int n = 1 );
+	void cross_feed_le( int8_t   *sample, int n = 1 );
+	void cross_feed_le( uint8_t  *sample, int n = 1 );
+	void cross_feed_le( int24_t  *sample, int n = 1 );
 }; // class bs2b_base
 
 #endif // BS2BCLASS_H

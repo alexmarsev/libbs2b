@@ -70,22 +70,62 @@ char const *bs2b_base::runtime_version( void )
 
 void bs2b_base::cross_feed( double *sample, int n )
 {
-	bs2b_cross_feed_dne( bs2bdp, sample, n );
+	bs2b_cross_feed_d( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_be( double *sample, int n )
+{
+	bs2b_cross_feed_dbe( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_le( double *sample, int n )
+{
+	bs2b_cross_feed_dle( bs2bdp, sample, n );
 }
 
 void bs2b_base::cross_feed( float *sample, int n )
 {
-	bs2b_cross_feed_fne( bs2bdp, sample, n );
+	bs2b_cross_feed_f( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_be( float *sample, int n )
+{
+	bs2b_cross_feed_fbe( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_le( float *sample, int n )
+{
+	bs2b_cross_feed_fle( bs2bdp, sample, n );
 }
 
 void bs2b_base::cross_feed( int32_t *sample, int n )
 {
-	bs2b_cross_feed_s32ne( bs2bdp, sample, n );
+	bs2b_cross_feed_s32( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_be( int32_t *sample, int n )
+{
+	bs2b_cross_feed_s32be( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_le( int32_t *sample, int n )
+{
+	bs2b_cross_feed_s32le( bs2bdp, sample, n );
 }
 
 void bs2b_base::cross_feed( int16_t *sample, int n )
 {
-	bs2b_cross_feed_s16ne( bs2bdp, sample, n );
+	bs2b_cross_feed_s16( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_be( int16_t *sample, int n )
+{
+	bs2b_cross_feed_s16be( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_le( int16_t *sample, int n )
+{
+	bs2b_cross_feed_s16le( bs2bdp, sample, n );
 }
 
 void bs2b_base::cross_feed( int8_t *sample, int n )
@@ -100,5 +140,15 @@ void bs2b_base::cross_feed( uint8_t *sample, int n )
 
 void bs2b_base::cross_feed( int24_t *sample, int n )
 {
-	bs2b_cross_feed_s24ne( bs2bdp, sample, n );
+	bs2b_cross_feed_s24( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_be( int24_t *sample, int n )
+{
+	bs2b_cross_feed_s24be( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_le( int24_t *sample, int n )
+{
+	bs2b_cross_feed_s24le( bs2bdp, sample, n );
 }

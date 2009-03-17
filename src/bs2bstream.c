@@ -52,7 +52,7 @@ int main( int argc, char *argv[] )
 	char     *progname, *tmpstr;
 	uint32_t srate;
 	uint32_t level;
-	short    sample[ 2 ];
+	int16_t  sample[ 2 ];
 
 	tmpstr = strrchr( argv[0], '/' );
 	tmpstr = tmpstr ? tmpstr + 1 : argv[ 0 ];
@@ -106,18 +106,18 @@ int main( int argc, char *argv[] )
 	bs2b_set_srate( bs2bdp, srate );
 	bs2b_set_level( bs2bdp, level );
 
-#if defined( _O_BINARY )
+	#if defined( _O_BINARY )
 	_setmode( _fileno( stdin ),  _O_BINARY );
 	_setmode( _fileno( stdout ), _O_BINARY );
-#elif defined( _O_RAW )
+	#elif defined( _O_RAW )
 	_setmode( _fileno( stdin ),  _O_RAW );
 	_setmode( _fileno( stdout ), _O_RAW );
-#endif
+	#endif
 
-	while( 2 == fread( sample, sizeof( short ), 2, stdin ) )
+	while( 2 == fread( sample, sizeof( int16_t ), 2, stdin ) )
 	{
-		bs2b_cross_feed_s16ne( bs2bdp, sample, 1 );
-		fwrite( sample, sizeof( short ), 2, stdout );
+		bs2b_cross_feed_s16( bs2bdp, sample, 1 );
+		fwrite( sample, sizeof( int16_t ), 2, stdout );
 	}
 
 	bs2b_close( bs2bdp );
