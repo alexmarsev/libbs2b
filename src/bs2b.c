@@ -270,33 +270,35 @@ char const *bs2b_runtime_version( void )
 
 void bs2b_cross_feed_dne( t_bs2bdp bs2bdp, double *sample, int n )
 {
-	if( n <= 0 ) return;
-
-	while( n-- )
+	if( n > 0 )
 	{
-		cross_feed_dne( bs2bdp, sample );
-		sample += 2;
-	} /* while */
+		while( n-- )
+		{
+			cross_feed_dne( bs2bdp, sample );
+			sample += 2;
+		} /* while */
+	} /* if */
 } /* bs2b_cross_feed_dne() */
 
 void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample, int n )
 {
-	if( n <= 0 ) return;
+	double sample_d[ 2 ];
 
-	while( n-- )
+	if( n > 0 )
 	{
-		double sample_d[ 2 ];
+		while( n-- )
+		{
+			sample_d[ 0 ] = ( double )sample[ 0 ];
+			sample_d[ 1 ] = ( double )sample[ 1 ];
 
-		sample_d[ 0 ] = ( double )sample[ 0 ];
-		sample_d[ 1 ] = ( double )sample[ 1 ];
+			cross_feed_dne( bs2bdp, sample_d );
 
-		cross_feed_dne( bs2bdp, sample_d );
+			sample[ 0 ] = ( float )sample_d[ 0 ];
+			sample[ 1 ] = ( float )sample_d[ 1 ];
 
-		sample[ 0 ] = ( float )sample_d[ 0 ];
-		sample[ 1 ] = ( float )sample_d[ 1 ];
-
-		sample += 2;
-	} /* while */
+			sample += 2;
+		} /* while */
+	} /* if */
 } /* bs2b_cross_feed_fne() */
 
 #define MAX_INT32_VALUE  2147483647.0
@@ -306,100 +308,105 @@ void bs2b_cross_feed_fne( t_bs2bdp bs2bdp, float *sample, int n )
 
 void bs2b_cross_feed_s32ne( t_bs2bdp bs2bdp, int32_t *sample, int n )
 {
-	if( n <= 0 ) return;
+	double sample_d[ 2 ];
 
-	while( n-- )
+	if( n > 0 )
 	{
-		double sample_d[ 2 ];
+		while( n-- )
+		{
+			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT32_VALUE;
+			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT32_VALUE;
 
-		sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT32_VALUE;
-		sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT32_VALUE;
+			cross_feed_dne( bs2bdp, sample_d );
 
-		cross_feed_dne( bs2bdp, sample_d );
+			sample[ 0 ] = ( int32_t )( sample_d[ 0 ] * MAX_INT32_VALUE );
+			sample[ 1 ] = ( int32_t )( sample_d[ 1 ] * MAX_INT32_VALUE );
 
-		sample[ 0 ] = ( int32_t )( sample_d[ 0 ] * MAX_INT32_VALUE );
-		sample[ 1 ] = ( int32_t )( sample_d[ 1 ] * MAX_INT32_VALUE );
-
-		sample += 2;
-	} /* while */
+			sample += 2;
+		} /* while */
+	} /* if */
 } /* bs2b_cross_feed_s32ne() */
 
 void bs2b_cross_feed_s16ne( t_bs2bdp bs2bdp, int16_t *sample, int n )
 {
-	if( n <= 0 ) return;
+	double sample_d[ 2 ];
 
-	while( n-- )
+	if( n > 0 )
 	{
-		double sample_d[ 2 ];
+		while( n-- )
+		{
+			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT16_VALUE;
+			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT16_VALUE;
 
-		sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT16_VALUE;
-		sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT16_VALUE;
+			cross_feed_dne( bs2bdp, sample_d );
 
-		cross_feed_dne( bs2bdp, sample_d );
+			sample[ 0 ] = ( int16_t )( sample_d[ 0 ] * MAX_INT16_VALUE );
+			sample[ 1 ] = ( int16_t )( sample_d[ 1 ] * MAX_INT16_VALUE );
 
-		sample[ 0 ] = ( int16_t )( sample_d[ 0 ] * MAX_INT16_VALUE );
-		sample[ 1 ] = ( int16_t )( sample_d[ 1 ] * MAX_INT16_VALUE );
-
-		sample += 2;
-	} /* while */
+			sample += 2;
+		} /* while */
+	} /* if */
 } /* bs2b_cross_feed_s16ne() */
 
 void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample, int n )
 {
-	if( n <= 0 ) return;
+	double sample_d[ 2 ];
 
-	while( n-- )
+	if( n > 0 )
 	{
-		double sample_d[ 2 ];
+		while( n-- )
+		{
+			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT8_VALUE;
+			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT8_VALUE;
 
-		sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT8_VALUE;
-		sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT8_VALUE;
+			cross_feed_dne( bs2bdp, sample_d );
 
-		cross_feed_dne( bs2bdp, sample_d );
+			sample[ 0 ] = ( int8_t )( sample_d[ 0 ] * MAX_INT8_VALUE );
+			sample[ 1 ] = ( int8_t )( sample_d[ 1 ] * MAX_INT8_VALUE );
 
-		sample[ 0 ] = ( int8_t )( sample_d[ 0 ] * MAX_INT8_VALUE );
-		sample[ 1 ] = ( int8_t )( sample_d[ 1 ] * MAX_INT8_VALUE );
-
-		sample += 2;
-	} /* while */
+			sample += 2;
+		} /* while */
+	} /* if */
 } /* bs2b_cross_feed_s8() */
 
 void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample, int n )
 {
-	if( n <= 0 ) return;
+	double sample_d[ 2 ];
 
-	while( n-- )
+	if( n > 0 )
 	{
-		double sample_d[ 2 ];
+		while( n-- )
+		{
+			sample_d[ 0 ] = ( ( double )( ( int8_t )( sample[ 0 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
+			sample_d[ 1 ] = ( ( double )( ( int8_t )( sample[ 1 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
 
-		sample_d[ 0 ] = ( ( double )( ( int8_t )( sample[ 0 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
-		sample_d[ 1 ] = ( ( double )( ( int8_t )( sample[ 1 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
+			cross_feed_dne( bs2bdp, sample_d );
 
-		cross_feed_dne( bs2bdp, sample_d );
+			sample[ 0 ] = ( ( uint8_t )( sample_d[ 0 ] * MAX_INT8_VALUE ) ) ^ 0x80;
+			sample[ 1 ] = ( ( uint8_t )( sample_d[ 1 ] * MAX_INT8_VALUE ) ) ^ 0x80;
 
-		sample[ 0 ] = ( ( uint8_t )( sample_d[ 0 ] * MAX_INT8_VALUE ) ) ^ 0x80;
-		sample[ 1 ] = ( ( uint8_t )( sample_d[ 1 ] * MAX_INT8_VALUE ) ) ^ 0x80;
-
-		sample += 2;
-	} /* while */
+			sample += 2;
+		} /* while */
+	} /* if */
 } /* bs2b_cross_feed_u8() */
 
 void bs2b_cross_feed_s24ne( t_bs2bdp bs2bdp, int24_t *sample, int n )
 {
-	if( n <= 0 ) return;
-
-	while( n-- )
-	{
 	double sample_d[ 2 ];
 
-		sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
-		sample_d[ 1 ] = int242double( sample + 1 ) / MAX_INT24_VALUE;
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
+			sample_d[ 1 ] = int242double( sample + 1 ) / MAX_INT24_VALUE;
 
-		cross_feed_dne( bs2bdp, sample_d );
+			cross_feed_dne( bs2bdp, sample_d );
 
-		double2int24( sample_d[ 0 ] * MAX_INT24_VALUE, sample );
-		double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
+			double2int24( sample_d[ 0 ] * MAX_INT24_VALUE, sample );
+			double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
 
-		sample += 2;
-	} /* while */
+			sample += 2;
+		} /* while */
+	} /* if */
 } /* bs2b_cross_feed_s24ne() */
