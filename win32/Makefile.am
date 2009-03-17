@@ -7,6 +7,6 @@ EXTRA_DIST = \
 	examples/mp3bs2bmp3.bat \
 	\
 	sndfile/libsndfile-1.lib \
-	sndfile/license.txt \
+	sndfile/libsndfile-license.txt \
 	sndfile/readme.txt \
 	sndfile/sndfile.h
