@@ -194,7 +194,13 @@ static void copy_data( SNDFILE *outfile, SNDFILE *infile, t_bs2bdp bs2bdp )
 	{
 		readcount = ( int )sf_read_double( infile, data, BUFFER_LEN );
 		if( readcount < 2 ) break;
+
+#if ((BS2B_VERSION_MAJOR != 2) || (BS2B_VERSION_MINOR != 3) || (BS2B_VERSION_RELEASE != 0))
+# error Stupid compile fix by sping, proper fix needed before next release
 		bs2b_cross_feed_dne( bs2bdp, data, readcount / 2 );
+#else
+		bs2b_cross_feed_dle( bs2bdp, data, readcount / 2 );
+#endif
 		sf_write_double( outfile, data, readcount );
 	}
 } /* copy_data() */
