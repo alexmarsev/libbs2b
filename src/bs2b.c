@@ -325,6 +325,11 @@ char const *bs2b_runtime_version( void )
 	return BS2B_VERSION_STR;
 } /* bs2b_runtime_version() */
 
+uint32_t bs2b_runtime_version_int( void )
+{
+	return BS2B_VERSION_INT;
+} /* bs2b_runtime_version_int() */
+
 void bs2b_cross_feed_d( t_bs2bdp bs2bdp, double *sample, int n )
 {
 	if( n > 0 )

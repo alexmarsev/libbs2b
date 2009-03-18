@@ -68,6 +68,11 @@ char const *bs2b_base::runtime_version( void )
 	return bs2b_runtime_version();
 }
 
+uint32_t runtime_version_int( void )
+{
+	return bs2b_runtime_version_int();
+}
+
 void bs2b_base::cross_feed( double *sample, int n )
 {
 	bs2b_cross_feed_d( bs2bdp, sample, n );

@@ -35,13 +35,15 @@ public:
 	bs2b_base();
 	~bs2b_base();
 
-	void        set_level( uint32_t level );
-	uint32_t    get_level();
-	void        set_srate( uint32_t srate );
-	uint32_t    get_srate();
-	void        clear();
-	bool        is_clear();
+	void     set_level( uint32_t level );
+	uint32_t get_level();
+	void     set_srate( uint32_t srate );
+	uint32_t get_srate();
+	void     clear();
+	bool     is_clear();
+
 	char const *runtime_version( void );
+	uint32_t    runtime_version_int( void );
 
 	void cross_feed( double   *sample, int n = 1 );
 	void cross_feed( float    *sample, int n = 1 );

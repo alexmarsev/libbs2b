@@ -127,6 +127,9 @@ int bs2b_is_clear( t_bs2bdp bs2bdp );
 /* Return bs2b version string */
 char const *bs2b_runtime_version( void );
 
+/* Return bs2b version integer */
+uint32_t bs2b_runtime_version_int( void );
+
 /* 'bs2b_cross_feed_*' crossfeeds buffer of 'n' stereo samples
  * pointed by 'sample'.
  * sample[i]   - first channel,
