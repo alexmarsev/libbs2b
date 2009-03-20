@@ -24,39 +24,8 @@
 #ifndef BS2B_H
 #define BS2B_H
 
-#include <limits.h>
-
 #include "bs2bversion.h"
-
-#if HAVE_STDINT_H
-#include <stdint.h>
-#else
-typedef signed   char    int8_t;
-typedef unsigned char    uint8_t;
-typedef signed   short   int16_t;
-typedef unsigned short   uint16_t;
-#if UINT_MAX == 0xffff /* 16 bit compiler */
-typedef signed   long    int32_t;
-typedef unsigned long    uint32_t;
-#else /* UINT_MAX != 0xffff */ /* 32/64 bit compiler */
-typedef signed   int     int32_t;
-typedef unsigned int     uint32_t;
-#endif
-#endif /* HAVE_STDINT_H */
-
-typedef struct
-{
-	uint8_t octet0;
-	uint8_t octet1;
-	int8_t  octet2;
-} int24_t;
-
-typedef struct
-{
-	uint8_t octet0;
-	uint8_t octet1;
-	uint8_t octet2;
-} uint24_t;
+#include "bs2btypes.h"
 
 /* Number of crossfeed levels */
 #define BS2B_CLEVELS           3
