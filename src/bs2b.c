@@ -233,12 +233,6 @@ static void cross_feed_d( t_bs2bdp bs2bdp, double *sample )
 	/* Bass boost cause allpass attenuation */
 	sample[ 0 ] *= bs2bdp->gain;
 	sample[ 1 ] *= bs2bdp->gain;
-
-	/* Clipping of overloaded samples */
-	if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
-	if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
-	if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
-	if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
 } /* cross_feed_d() */
 
 /* Exported functions.
@@ -337,6 +331,13 @@ void bs2b_cross_feed_d( t_bs2bdp bs2bdp, double *sample, int n )
 		while( n-- )
 		{
 			cross_feed_d( bs2bdp, sample );
+			
+			/* Clipping of overloaded samples */
+			if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
+			if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
+			if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
+			if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
+
 			sample += 2;
 		} /* while */
 	} /* if */
@@ -354,6 +355,12 @@ void bs2b_cross_feed_dbe( t_bs2bdp bs2bdp, double *sample, int n )
 			#endif
 
 			cross_feed_d( bs2bdp, sample );
+
+			/* Clipping of overloaded samples */
+			if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
+			if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
+			if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
+			if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
 
 			#ifndef WORDS_BIGENDIAN
 			int64swap( ( uint32_t * )sample );
@@ -378,6 +385,12 @@ void bs2b_cross_feed_dle( t_bs2bdp bs2bdp, double *sample, int n )
 
 			cross_feed_d( bs2bdp, sample );
 
+			/* Clipping of overloaded samples */
+			if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
+			if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
+			if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
+			if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
+
 			#ifdef WORDS_BIGENDIAN
 			int64swap( ( uint32_t * )sample );
 			int64swap( ( uint32_t * )( sample + 1 ) );
@@ -400,6 +413,12 @@ void bs2b_cross_feed_f( t_bs2bdp bs2bdp, float *sample, int n )
 			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] >  1.0 ) sample_d[ 0 ] =  1.0;
+			if( sample_d[ 0 ] < -1.0 ) sample_d[ 0 ] = -1.0;
+			if( sample_d[ 1 ] >  1.0 ) sample_d[ 1 ] =  1.0;
+			if( sample_d[ 1 ] < -1.0 ) sample_d[ 1 ] = -1.0;
 
 			sample[ 0 ] = ( float )sample_d[ 0 ];
 			sample[ 1 ] = ( float )sample_d[ 1 ];
@@ -426,6 +445,12 @@ void bs2b_cross_feed_fbe( t_bs2bdp bs2bdp, float *sample, int n )
 			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] >  1.0 ) sample_d[ 0 ] =  1.0;
+			if( sample_d[ 0 ] < -1.0 ) sample_d[ 0 ] = -1.0;
+			if( sample_d[ 1 ] >  1.0 ) sample_d[ 1 ] =  1.0;
+			if( sample_d[ 1 ] < -1.0 ) sample_d[ 1 ] = -1.0;
 
 			sample[ 0 ] = ( float )sample_d[ 0 ];
 			sample[ 1 ] = ( float )sample_d[ 1 ];
@@ -458,6 +483,12 @@ void bs2b_cross_feed_fle( t_bs2bdp bs2bdp, float *sample, int n )
 
 			cross_feed_d( bs2bdp, sample_d );
 
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] >  1.0 ) sample_d[ 0 ] =  1.0;
+			if( sample_d[ 0 ] < -1.0 ) sample_d[ 0 ] = -1.0;
+			if( sample_d[ 1 ] >  1.0 ) sample_d[ 1 ] =  1.0;
+			if( sample_d[ 1 ] < -1.0 ) sample_d[ 1 ] = -1.0;
+
 			sample[ 0 ] = ( float )sample_d[ 0 ];
 			sample[ 1 ] = ( float )sample_d[ 1 ];
 
@@ -472,9 +503,13 @@ void bs2b_cross_feed_fle( t_bs2bdp bs2bdp, float *sample, int n )
 } /* bs2b_cross_feed_fle() */
 
 #define MAX_INT32_VALUE  2147483647.0
-#define MAX_INT16_VALUE       32767.0
-#define MAX_INT8_VALUE          127.0
+#define MIN_INT32_VALUE -2147483648.0
 #define MAX_INT24_VALUE     8388607.0
+#define MIN_INT24_VALUE    -8388608.0
+#define MAX_INT16_VALUE       32767.0
+#define MIN_INT16_VALUE      -32768.0
+#define MAX_INT8_VALUE          127.0
+#define MIN_INT8_VALUE         -128.0
 
 void bs2b_cross_feed_s32( t_bs2bdp bs2bdp, int32_t *sample, int n )
 {
@@ -484,13 +519,19 @@ void bs2b_cross_feed_s32( t_bs2bdp bs2bdp, int32_t *sample, int n )
 	{
 		while( n-- )
 		{
-			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT32_VALUE;
-			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT32_VALUE;
+			sample_d[ 0 ] = ( double )sample[ 0 ];
+			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			sample[ 0 ] = ( int32_t )( sample_d[ 0 ] * MAX_INT32_VALUE );
-			sample[ 1 ] = ( int32_t )( sample_d[ 1 ] * MAX_INT32_VALUE );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT32_VALUE ) sample_d[ 0 ] = MAX_INT32_VALUE;
+			if( sample_d[ 0 ] < MIN_INT32_VALUE ) sample_d[ 0 ] = MIN_INT32_VALUE;
+			if( sample_d[ 1 ] > MAX_INT32_VALUE ) sample_d[ 1 ] = MAX_INT32_VALUE;
+			if( sample_d[ 1 ] < MIN_INT32_VALUE ) sample_d[ 1 ] = MIN_INT32_VALUE;
+
+			sample[ 0 ] = ( int32_t )sample_d[ 0 ];
+			sample[ 1 ] = ( int32_t )sample_d[ 1 ];
 
 			sample += 2;
 		} /* while */
@@ -510,13 +551,19 @@ void bs2b_cross_feed_s32be( t_bs2bdp bs2bdp, int32_t *sample, int n )
 			int32swap( sample + 1 );
 			#endif
 
-			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT32_VALUE;
-			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT32_VALUE;
+			sample_d[ 0 ] = ( double )sample[ 0 ];
+			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			sample[ 0 ] = ( int32_t )( sample_d[ 0 ] * MAX_INT32_VALUE );
-			sample[ 1 ] = ( int32_t )( sample_d[ 1 ] * MAX_INT32_VALUE );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT32_VALUE ) sample_d[ 0 ] = MAX_INT32_VALUE;
+			if( sample_d[ 0 ] < MIN_INT32_VALUE ) sample_d[ 0 ] = MIN_INT32_VALUE;
+			if( sample_d[ 1 ] > MAX_INT32_VALUE ) sample_d[ 1 ] = MAX_INT32_VALUE;
+			if( sample_d[ 1 ] < MIN_INT32_VALUE ) sample_d[ 1 ] = MIN_INT32_VALUE;
+
+			sample[ 0 ] = ( int32_t )sample_d[ 0 ];
+			sample[ 1 ] = ( int32_t )sample_d[ 1 ];
 
 			#ifndef WORDS_BIGENDIAN
 			int32swap( sample );
@@ -541,13 +588,19 @@ void bs2b_cross_feed_s32le( t_bs2bdp bs2bdp, int32_t *sample, int n )
 			int32swap( sample + 1 );
 			#endif
 
-			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT32_VALUE;
-			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT32_VALUE;
+			sample_d[ 0 ] = ( double )sample[ 0 ];
+			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			sample[ 0 ] = ( int32_t )( sample_d[ 0 ] * MAX_INT32_VALUE );
-			sample[ 1 ] = ( int32_t )( sample_d[ 1 ] * MAX_INT32_VALUE );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT32_VALUE ) sample_d[ 0 ] = MAX_INT32_VALUE;
+			if( sample_d[ 0 ] < MIN_INT32_VALUE ) sample_d[ 0 ] = MIN_INT32_VALUE;
+			if( sample_d[ 1 ] > MAX_INT32_VALUE ) sample_d[ 1 ] = MAX_INT32_VALUE;
+			if( sample_d[ 1 ] < MIN_INT32_VALUE ) sample_d[ 1 ] = MIN_INT32_VALUE;
+
+			sample[ 0 ] = ( int32_t )sample_d[ 0 ];
+			sample[ 1 ] = ( int32_t )sample_d[ 1 ];
 
 			#ifdef WORDS_BIGENDIAN
 			int32swap( sample );
@@ -567,13 +620,19 @@ void bs2b_cross_feed_s16( t_bs2bdp bs2bdp, int16_t *sample, int n )
 	{
 		while( n-- )
 		{
-			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT16_VALUE;
-			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT16_VALUE;
+			sample_d[ 0 ] = ( double )sample[ 0 ];
+			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			sample[ 0 ] = ( int16_t )( sample_d[ 0 ] * MAX_INT16_VALUE );
-			sample[ 1 ] = ( int16_t )( sample_d[ 1 ] * MAX_INT16_VALUE );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT16_VALUE ) sample_d[ 0 ] = MAX_INT16_VALUE;
+			if( sample_d[ 0 ] < MIN_INT16_VALUE ) sample_d[ 0 ] = MIN_INT16_VALUE;
+			if( sample_d[ 1 ] > MAX_INT16_VALUE ) sample_d[ 1 ] = MAX_INT16_VALUE;
+			if( sample_d[ 1 ] < MIN_INT16_VALUE ) sample_d[ 1 ] = MIN_INT16_VALUE;
+
+			sample[ 0 ] = ( int16_t )sample_d[ 0 ];
+			sample[ 1 ] = ( int16_t )sample_d[ 1 ];
 
 			sample += 2;
 		} /* while */
@@ -593,13 +652,19 @@ void bs2b_cross_feed_s16be( t_bs2bdp bs2bdp, int16_t *sample, int n )
 			int16swap( sample + 1 );
 			#endif
 
-			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT16_VALUE;
-			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT16_VALUE;
+			sample_d[ 0 ] = ( double )sample[ 0 ];
+			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			sample[ 0 ] = ( int16_t )( sample_d[ 0 ] * MAX_INT16_VALUE );
-			sample[ 1 ] = ( int16_t )( sample_d[ 1 ] * MAX_INT16_VALUE );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT16_VALUE ) sample_d[ 0 ] = MAX_INT16_VALUE;
+			if( sample_d[ 0 ] < MIN_INT16_VALUE ) sample_d[ 0 ] = MIN_INT16_VALUE;
+			if( sample_d[ 1 ] > MAX_INT16_VALUE ) sample_d[ 1 ] = MAX_INT16_VALUE;
+			if( sample_d[ 1 ] < MIN_INT16_VALUE ) sample_d[ 1 ] = MIN_INT16_VALUE;
+
+			sample[ 0 ] = ( int16_t )sample_d[ 0 ];
+			sample[ 1 ] = ( int16_t )sample_d[ 1 ];
 
 			#ifndef WORDS_BIGENDIAN
 			int16swap( sample );
@@ -624,13 +689,19 @@ void bs2b_cross_feed_s16le( t_bs2bdp bs2bdp, int16_t *sample, int n )
 			int16swap( sample + 1 );
 			#endif
 
-			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT16_VALUE;
-			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT16_VALUE;
+			sample_d[ 0 ] = ( double )sample[ 0 ];
+			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			sample[ 0 ] = ( int16_t )( sample_d[ 0 ] * MAX_INT16_VALUE );
-			sample[ 1 ] = ( int16_t )( sample_d[ 1 ] * MAX_INT16_VALUE );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT16_VALUE ) sample_d[ 0 ] = MAX_INT16_VALUE;
+			if( sample_d[ 0 ] < MIN_INT16_VALUE ) sample_d[ 0 ] = MIN_INT16_VALUE;
+			if( sample_d[ 1 ] > MAX_INT16_VALUE ) sample_d[ 1 ] = MAX_INT16_VALUE;
+			if( sample_d[ 1 ] < MIN_INT16_VALUE ) sample_d[ 1 ] = MIN_INT16_VALUE;
+
+			sample[ 0 ] = ( int16_t )sample_d[ 0 ];
+			sample[ 1 ] = ( int16_t )sample_d[ 1 ];
 
 			#ifdef WORDS_BIGENDIAN
 			int16swap( sample );
@@ -650,13 +721,19 @@ void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample, int n )
 	{
 		while( n-- )
 		{
-			sample_d[ 0 ] = ( double )sample[ 0 ] / MAX_INT8_VALUE;
-			sample_d[ 1 ] = ( double )sample[ 1 ] / MAX_INT8_VALUE;
+			sample_d[ 0 ] = ( double )sample[ 0 ];
+			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			sample[ 0 ] = ( int8_t )( sample_d[ 0 ] * MAX_INT8_VALUE );
-			sample[ 1 ] = ( int8_t )( sample_d[ 1 ] * MAX_INT8_VALUE );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT8_VALUE ) sample_d[ 0 ] = MAX_INT8_VALUE;
+			if( sample_d[ 0 ] < MIN_INT8_VALUE ) sample_d[ 0 ] = MIN_INT8_VALUE;
+			if( sample_d[ 1 ] > MAX_INT8_VALUE ) sample_d[ 1 ] = MAX_INT8_VALUE;
+			if( sample_d[ 1 ] < MIN_INT8_VALUE ) sample_d[ 1 ] = MIN_INT8_VALUE;
+
+			sample[ 0 ] = ( int8_t )sample_d[ 0 ];
+			sample[ 1 ] = ( int8_t )sample_d[ 1 ];
 
 			sample += 2;
 		} /* while */
@@ -671,13 +748,19 @@ void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample, int n )
 	{
 		while( n-- )
 		{
-			sample_d[ 0 ] = ( ( double )( ( int8_t )( sample[ 0 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
-			sample_d[ 1 ] = ( ( double )( ( int8_t )( sample[ 1 ] ^ 0x80 ) ) ) / MAX_INT8_VALUE;
+			sample_d[ 0 ] = ( double )( ( int8_t )( sample[ 0 ] ^ 0x80 ) );
+			sample_d[ 1 ] = ( double )( ( int8_t )( sample[ 1 ] ^ 0x80 ) );
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			sample[ 0 ] = ( ( uint8_t )( sample_d[ 0 ] * MAX_INT8_VALUE ) ) ^ 0x80;
-			sample[ 1 ] = ( ( uint8_t )( sample_d[ 1 ] * MAX_INT8_VALUE ) ) ^ 0x80;
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT8_VALUE ) sample_d[ 0 ] = MAX_INT8_VALUE;
+			if( sample_d[ 0 ] < MIN_INT8_VALUE ) sample_d[ 0 ] = MIN_INT8_VALUE;
+			if( sample_d[ 1 ] > MAX_INT8_VALUE ) sample_d[ 1 ] = MAX_INT8_VALUE;
+			if( sample_d[ 1 ] < MIN_INT8_VALUE ) sample_d[ 1 ] = MIN_INT8_VALUE;
+
+			sample[ 0 ] = ( ( uint8_t )sample_d[ 0 ] ) ^ 0x80;
+			sample[ 1 ] = ( ( uint8_t )sample_d[ 1 ] ) ^ 0x80;
 
 			sample += 2;
 		} /* while */
@@ -692,13 +775,19 @@ void bs2b_cross_feed_s24( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 	{
 		while( n-- )
 		{
-			sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
-			sample_d[ 1 ] = int242double( sample + 1 ) / MAX_INT24_VALUE;
+			sample_d[ 0 ] = int242double( sample );
+			sample_d[ 1 ] = int242double( sample + 1 );
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			double2int24( sample_d[ 0 ] * MAX_INT24_VALUE, sample );
-			double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT24_VALUE ) sample_d[ 0 ] = MAX_INT24_VALUE;
+			if( sample_d[ 0 ] < MIN_INT24_VALUE ) sample_d[ 0 ] = MIN_INT24_VALUE;
+			if( sample_d[ 1 ] > MAX_INT24_VALUE ) sample_d[ 1 ] = MAX_INT24_VALUE;
+			if( sample_d[ 1 ] < MIN_INT24_VALUE ) sample_d[ 1 ] = MIN_INT24_VALUE;
+
+			double2int24( sample_d[ 0 ], sample );
+			double2int24( sample_d[ 1 ], sample + 1 );
 
 			sample += 2;
 		} /* while */
@@ -718,13 +807,19 @@ void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
 			#endif
 
-			sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
-			sample_d[ 1 ] = int242double( sample + 1 ) / MAX_INT24_VALUE;
+			sample_d[ 0 ] = int242double( sample );
+			sample_d[ 1 ] = int242double( sample + 1 );
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			double2int24( sample_d[ 0 ] * MAX_INT24_VALUE, sample );
-			double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT24_VALUE ) sample_d[ 0 ] = MAX_INT24_VALUE;
+			if( sample_d[ 0 ] < MIN_INT24_VALUE ) sample_d[ 0 ] = MIN_INT24_VALUE;
+			if( sample_d[ 1 ] > MAX_INT24_VALUE ) sample_d[ 1 ] = MAX_INT24_VALUE;
+			if( sample_d[ 1 ] < MIN_INT24_VALUE ) sample_d[ 1 ] = MIN_INT24_VALUE;
+
+			double2int24( sample_d[ 0 ], sample );
+			double2int24( sample_d[ 1 ], sample + 1 );
 
 			#ifndef WORDS_BIGENDIAN
 			int24swap( ( bs2b_uint24_t * )sample );
@@ -749,13 +844,19 @@ void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
 			#endif
 
-			sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
-			sample_d[ 1 ] = int242double( sample + 1 ) / MAX_INT24_VALUE;
+			sample_d[ 0 ] = int242double( sample );
+			sample_d[ 1 ] = int242double( sample + 1 );
 
 			cross_feed_d( bs2bdp, sample_d );
 
-			double2int24( sample_d[ 0 ] * MAX_INT24_VALUE, sample );
-			double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT24_VALUE ) sample_d[ 0 ] = MAX_INT24_VALUE;
+			if( sample_d[ 0 ] < MIN_INT24_VALUE ) sample_d[ 0 ] = MIN_INT24_VALUE;
+			if( sample_d[ 1 ] > MAX_INT24_VALUE ) sample_d[ 1 ] = MAX_INT24_VALUE;
+			if( sample_d[ 1 ] < MIN_INT24_VALUE ) sample_d[ 1 ] = MIN_INT24_VALUE;
+
+			double2int24( sample_d[ 0 ], sample );
+			double2int24( sample_d[ 1 ], sample + 1 );
 
 			#ifdef WORDS_BIGENDIAN
 			int24swap( ( bs2b_uint24_t * )sample );
