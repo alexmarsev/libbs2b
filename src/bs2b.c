@@ -35,7 +35,7 @@ static void int16swap( uint16_t *x )
 	*x = ( *x >> 8 ) | ( *x << 8 );
 }
 
-static void int24swap( uint24_t *x )
+static void int24swap( bs2b_uint24_t *x )
 {
 	uint8_t x1;
 
@@ -62,7 +62,7 @@ static void int64swap( uint32_t *x )
 	int32swap( x + 1 );
 }
 
-static double int242double( int24_t *in )
+static double int242double( bs2b_int24_t *in )
 {
 	int32_t out =
 		#ifdef WORDS_BIGENDIAN
@@ -80,7 +80,7 @@ static double int242double( int24_t *in )
 	return ( double )out;
 } /* int242double() */
 
-static double uint242double( uint24_t *in )
+static double uint242double( bs2b_uint24_t *in )
 {
 	uint32_t out =
 		#ifdef WORDS_BIGENDIAN
@@ -96,7 +96,7 @@ static double uint242double( uint24_t *in )
 	return ( double )out;
 } /* uint242double() */
 
-static void double2int24( double in, int24_t *out )
+static void double2int24( double in, bs2b_int24_t *out )
 {
 	uint32_t i = ( uint32_t )in;
 
@@ -111,7 +111,7 @@ static void double2int24( double in, int24_t *out )
 	#endif /* WORDS_BIGENDIAN */
 } /* double2int24() */
 
-static void double2uint24( double in, uint24_t *out )
+static void double2uint24( double in, bs2b_uint24_t *out )
 {
 	uint32_t i = ( uint32_t )in;
 
@@ -684,7 +684,7 @@ void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample, int n )
 	} /* if */
 } /* bs2b_cross_feed_u8() */
 
-void bs2b_cross_feed_s24( t_bs2bdp bs2bdp, int24_t *sample, int n )
+void bs2b_cross_feed_s24( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 {
 	double sample_d[ 2 ];
 
@@ -705,7 +705,7 @@ void bs2b_cross_feed_s24( t_bs2bdp bs2bdp, int24_t *sample, int n )
 	} /* if */
 } /* bs2b_cross_feed_s24() */
 
-void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, int24_t *sample, int n )
+void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 {
 	double sample_d[ 2 ];
 
@@ -714,8 +714,8 @@ void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, int24_t *sample, int n )
 		while( n-- )
 		{
 			#ifndef WORDS_BIGENDIAN
-			int24swap( ( uint24_t * )sample );
-			int24swap( ( uint24_t * )( sample + 1 ) );
+			int24swap( ( bs2b_uint24_t * )sample );
+			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
 			#endif
 
 			sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
@@ -727,8 +727,8 @@ void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, int24_t *sample, int n )
 			double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
 
 			#ifndef WORDS_BIGENDIAN
-			int24swap( ( uint24_t * )sample );
-			int24swap( ( uint24_t * )( sample + 1 ) );
+			int24swap( ( bs2b_uint24_t * )sample );
+			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
 			#endif
 
 			sample += 2;
@@ -736,7 +736,7 @@ void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, int24_t *sample, int n )
 	} /* if */
 } /* bs2b_cross_feed_s24be() */
 
-void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, int24_t *sample, int n )
+void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 {
 	double sample_d[ 2 ];
 
@@ -745,8 +745,8 @@ void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, int24_t *sample, int n )
 		while( n-- )
 		{
 			#ifdef WORDS_BIGENDIAN
-			int24swap( ( uint24_t * )sample );
-			int24swap( ( uint24_t * )( sample + 1 ) );
+			int24swap( ( bs2b_uint24_t * )sample );
+			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
 			#endif
 
 			sample_d[ 0 ] = int242double( sample )     / MAX_INT24_VALUE;
@@ -758,8 +758,8 @@ void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, int24_t *sample, int n )
 			double2int24( sample_d[ 1 ] * MAX_INT24_VALUE, sample + 1 );
 
 			#ifdef WORDS_BIGENDIAN
-			int24swap( ( uint24_t * )sample );
-			int24swap( ( uint24_t * )( sample + 1 ) );
+			int24swap( ( bs2b_uint24_t * )sample );
+			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
 			#endif
 
 			sample += 2;

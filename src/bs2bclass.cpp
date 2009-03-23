@@ -143,17 +143,17 @@ void bs2b_base::cross_feed( uint8_t *sample, int n )
 	bs2b_cross_feed_u8( bs2bdp, sample, n );
 }
 
-void bs2b_base::cross_feed( int24_t *sample, int n )
+void bs2b_base::cross_feed( bs2b_int24_t *sample, int n )
 {
 	bs2b_cross_feed_s24( bs2bdp, sample, n );
 }
 
-void bs2b_base::cross_feed_be( int24_t *sample, int n )
+void bs2b_base::cross_feed_be( bs2b_int24_t *sample, int n )
 {
 	bs2b_cross_feed_s24be( bs2bdp, sample, n );
 }
 
-void bs2b_base::cross_feed_le( int24_t *sample, int n )
+void bs2b_base::cross_feed_le( bs2b_int24_t *sample, int n )
 {
 	bs2b_cross_feed_s24le( bs2bdp, sample, n );
 }

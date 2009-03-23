@@ -64,13 +64,13 @@ typedef struct
 	uint8_t octet0;
 	uint8_t octet1;
 	int8_t  octet2;
-} int24_t;
+} bs2b_int24_t;
 
 typedef struct
 {
 	uint8_t octet0;
 	uint8_t octet1;
 	uint8_t octet2;
-} uint24_t;
+} bs2b_uint24_t;
 
 #endif	/* BS2BTYPES_H */

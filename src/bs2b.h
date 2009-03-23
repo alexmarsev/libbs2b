@@ -149,13 +149,13 @@ void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample, int n );
 void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample, int n );
 
 /* sample poits to 24bit signed integers native endians */
-void bs2b_cross_feed_s24( t_bs2bdp bs2bdp, int24_t *sample, int n );
+void bs2b_cross_feed_s24( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n );
 
 /* sample poits to 24bit signed integers be endians */
-void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, int24_t *sample, int n );
+void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n );
 
 /* sample poits to 24bit signed integers little endians */
-void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, int24_t *sample, int n );
+void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n );
 
 #ifdef __cplusplus
 }	/* extern "C" */
