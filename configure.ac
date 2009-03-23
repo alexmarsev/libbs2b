@@ -33,7 +33,6 @@ AC_CHECK_FUNCS([strrchr])
 AC_CONFIG_FILES([libbs2b.pc
                  Makefile
                  doc/Makefile
-                 doc/img/Makefile
                  src/Makefile
                  win32/Makefile])
 AC_OUTPUT
