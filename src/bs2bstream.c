@@ -22,6 +22,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
 
@@ -34,77 +35,129 @@
 static void print_usage( char *progname )
 {
 	fprintf( stderr, "\n"
-		"    Bauer stereophonic-to-binaural DSP stream converter. "
-		"Version %s\n"
-		"    PCM stdin-stdout, 44100Hz, 16bit\n",
+		"    Bauer stereophonic-to-binaural DSP stream converter. Version %s\n"
+		"    LPCM stdin-stdout\n",
 		BS2B_VERSION_STR );
-	fprintf( stderr, "Usage : %s [-x]\n", progname );
+	fprintf( stderr, "Usage : %s [-h] [-u] [-e E] [-b B] [-r R] [-l L]\n",
+		progname );
 	fprintf( stderr, "\n"
-		"    'x' is number of:\n"
+		"    -h - this help\n"
+		"    -u - unsigned data (default=signed)\n"
+		"    -e - endians, E=b/l/n (big/little/native) (default=n)\n"
+		"    -b - bits per integer sample, B=8/16/24/32 (default=16)\n"
+		"    -r - sample rate, R=<value by kHz> (default=44.1)\n"
+		"    -l - crossfeed level, L is number of:\n"
 		"    1,2,3 - Low to High crossfeed levels,\n"
 		"    4,5,6 - Low to High crossfeed levels of 'Easy' version\n"
-		"    The default crossfeed level is 6\n" );
+		"    (default=6)\n" );
 } /* print_usage() */
 
 int main( int argc, char *argv[] )
 {
+	int i;
+	char *progname, *tmpstr;
+
 	t_bs2bdp bs2bdp;
-	char     *progname, *tmpstr;
-	uint32_t srate;
-	uint32_t level;
-	int16_t  sample[ 2 ];
+
+	uint32_t srate = 44100;
+	uint32_t level = 6;
+	int bits = 16;
+	int unsigned_flag = 0;
+	int endians = 'n';
 
 	tmpstr = strrchr( argv[0], '/' );
 	tmpstr = tmpstr ? tmpstr + 1 : argv[ 0 ];
 	progname = strrchr( tmpstr, '\\' );
 	progname = progname ? progname + 1 : tmpstr;
 
-	if( argc > 2 )
+	for( i = 1; i < argc; i++ )
 	{
-		print_usage( progname );
-		return 1;
-	}
+		double df;
 
-	level = BS2B_DEFAULT_CLEVEL;
-
-	if( argc == 2 )
-	{
-		if( ( !argv[ 1 ][ 1 ] ) || ( argv[ 1 ][ 0 ] != '-' ) )
+		if( '-' != argv[ i ][ 0 ] )
 		{
 			print_usage( progname );
 			return 1;
 		}
-
-		switch( argv[ 1 ][ 1 ] )
+		else
 		{
-		case '1':
-			level = BS2B_LOW_CLEVEL;
-			break;
+			switch( argv[ i ][ 1 ] )
+			{
+				case 'h':
+					print_usage( progname );
+					return 1;
 
-		case '2':
-			level = BS2B_MIDDLE_CLEVEL;
-			break;
+				case 'u':
+					unsigned_flag = 1;
+					break;
 
-		case '3':
-			level = BS2B_HIGH_CLEVEL;
-			break;
+				case 'e':
+					if( ++i >= argc )
+					{
+						print_usage( progname );
+						return 1;
+					}
+					endians = argv[ i ][ 0 ];
+					if( endians != 'n' &&
+						endians != 'b' &&
+						endians != 'l' )
+					{
+						print_usage( progname );
+						return 1;
+					}
+					break;
 
-		case '4':
-			level = BS2B_LOW_ECLEVEL;
-			break;
+				case 'b':
+					if( ++i >= argc )
+					{
+						print_usage( progname );
+						return 1;
+					}
+					bits = atoi( argv[ i ] );
+					if( bits != 8 &&
+						bits != 16 &&
+						bits != 24 &&
+						bits != 32 )
+					{
+						print_usage( progname );
+						return 1;
+					}
+					break;
 
-		case '5':
-			level = BS2B_MIDDLE_ECLEVEL;
-			break;
-		} /* switch */
-	}
+				case 'r':
+					if( ++i >= argc )
+					{
+						print_usage( progname );
+						return 1;
+					}
+					df = atof( argv[ i ] );
+					srate = ( uint32_t )( df * 1000 );
+					if( srate > 384000 || srate < 2000 )
+					{
+						print_usage( progname );
+						return 1;
+					}
+					break;
 
-	srate = 44100;
-
-	bs2bdp = bs2b_open();
-
-	bs2b_set_srate( bs2bdp, srate );
-	bs2b_set_level( bs2bdp, level );
+				case 'l':
+					if( ++i >= argc )
+					{
+						print_usage( progname );
+						return 1;
+					}
+					level = atoi( argv[ i ] );
+					if( level > 6 || level < 1 )
+					{
+						print_usage( progname );
+						return 1;
+					}
+					break;
+				default:
+					print_usage( progname );
+					return 1;
+			} /* swith */
+		} /* if */
+	} /* for */
 
 	#if defined( _O_BINARY )
 	_setmode( _fileno( stdin ),  _O_BINARY );
@@ -114,11 +167,151 @@ int main( int argc, char *argv[] )
 	_setmode( _fileno( stdout ), _O_RAW );
 	#endif
 
-	while( 2 == fread( sample, sizeof( int16_t ), 2, stdin ) )
+	bs2bdp = bs2b_open();
+
+	bs2b_set_srate( bs2bdp, srate );
+	bs2b_set_level( bs2bdp, level );
+
+	switch( bits )
 	{
-		bs2b_cross_feed_s16( bs2bdp, sample, 1 );
-		fwrite( sample, sizeof( int16_t ), 2, stdout );
-	}
+	case 8:
+		{
+			int8_t sample[ 2 ];
+			while( 2 == fread( sample, sizeof( int8_t ), 2, stdin ) )
+			{
+				if( unsigned_flag )
+					bs2b_cross_feed_u8( bs2bdp, sample, 1 );
+				else
+					bs2b_cross_feed_s8( bs2bdp, sample, 1 );
+
+				fwrite( sample, sizeof( int8_t ), 2, stdout );
+			} /* while */
+		}
+		break;
+
+	case 16:
+		{
+			int16_t sample[ 2 ];
+			while( 2 == fread( sample, sizeof( int16_t ), 2, stdin ) )
+			{
+				switch( endians )
+				{
+				case 'b':
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s16be( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s16be( bs2bdp, sample, 1 );
+					}
+					break;
+
+				case 'l':
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s16le( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s16le( bs2bdp, sample, 1 );
+					}
+					break;
+
+				default:
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s16( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s16( bs2bdp, sample, 1 );
+					}
+					break;
+				} /* switch( endians ) */
+
+				fwrite( sample, sizeof( int16_t ), 2, stdout );
+			} /* while */
+		}
+		break;
+
+	case 24:
+		{
+			bs2b_int24_t sample[ 2 ];
+			while( 2 == fread( sample, sizeof( bs2b_int24_t ), 2, stdin ) )
+			{
+				switch( endians )
+				{
+				case 'b':
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s24be( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s24be( bs2bdp, sample, 1 );
+					}
+					break;
+
+				case 'l':
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s24le( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s24le( bs2bdp, sample, 1 );
+					}
+					break;
+
+				default:
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s24( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s24( bs2bdp, sample, 1 );
+					}
+					break;
+				} /* switch( endians ) */
+
+				fwrite( sample, sizeof( bs2b_int24_t ), 2, stdout );
+			} /* while */
+		}
+		break;
+
+	case 32:
+		{
+			int32_t sample[ 2 ];
+			while( 2 == fread( sample, sizeof( int32_t ), 2, stdin ) )
+			{
+				switch( endians )
+				{
+				case 'b':
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s32be( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s32be( bs2bdp, sample, 1 );
+					}
+					break;
+
+				case 'l':
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s32le( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s32le( bs2bdp, sample, 1 );
+					}
+					break;
+
+				default:
+					{
+						if( unsigned_flag )
+							bs2b_cross_feed_s32( bs2bdp, sample, 1 ); /* ***!!!*** s -> u */
+						else
+							bs2b_cross_feed_s32( bs2bdp, sample, 1 );
+					}
+					break;
+				} /* switch( endians ) */
+
+				fwrite( sample, sizeof( int32_t ), 2, stdout );
+			} /* while */
+		}
+		break;
+
+	default:
+		break;
+	} /* switch( bits ) */
 
 	bs2b_close( bs2bdp );
 	bs2bdp = 0;

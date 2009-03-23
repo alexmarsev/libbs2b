@@ -1,3 +1,7 @@
+2009-03-23 Boris Mikhaylov <http://www.tmn.ru/~bor>
+	* Normalization of integer samples are removed.
+	* Added more switches to bs2bstream.
+
 2009-03-17 Boris Mikhaylov <http://www.tmn.ru/~bor>
 	* Added handling of big/little endian buffers.
 
