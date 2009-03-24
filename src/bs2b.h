@@ -127,20 +127,38 @@ void bs2b_cross_feed_fle( t_bs2bdp bs2bdp, float *sample, int n );
 /* sample poits to 32bit signed integers native endians */
 void bs2b_cross_feed_s32( t_bs2bdp bs2bdp, int32_t *sample, int n );
 
+/* sample poits to 32bit unsigned integers native endians */
+void bs2b_cross_feed_u32( t_bs2bdp bs2bdp, uint32_t *sample, int n );
+
 /* sample poits to 32bit signed integers big endians */
 void bs2b_cross_feed_s32be( t_bs2bdp bs2bdp, int32_t *sample, int n );
+
+/* sample poits to 32bit unsigned integers big endians */
+void bs2b_cross_feed_u32be( t_bs2bdp bs2bdp, uint32_t *sample, int n );
 
 /* sample poits to 32bit signed integers little endians */
 void bs2b_cross_feed_s32le( t_bs2bdp bs2bdp, int32_t *sample, int n );
 
+/* sample poits to 32bit unsigned integers little endians */
+void bs2b_cross_feed_u32le( t_bs2bdp bs2bdp, uint32_t *sample, int n );
+
 /* sample poits to 16bit signed integers native endians */
 void bs2b_cross_feed_s16( t_bs2bdp bs2bdp, int16_t *sample, int n );
+
+/* sample poits to 16bit unsigned integers native endians */
+void bs2b_cross_feed_u16( t_bs2bdp bs2bdp, uint16_t *sample, int n );
 
 /* sample poits to 16bit signed integers big endians */
 void bs2b_cross_feed_s16be( t_bs2bdp bs2bdp, int16_t *sample, int n );
 
+/* sample poits to 16bit unsigned integers big endians */
+void bs2b_cross_feed_u16be( t_bs2bdp bs2bdp, uint16_t *sample, int n );
+
 /* sample poits to 16bit signed integers little endians */
 void bs2b_cross_feed_s16le( t_bs2bdp bs2bdp, int16_t *sample, int n );
+
+/* sample poits to 16bit unsigned integers little endians */
+void bs2b_cross_feed_u16le( t_bs2bdp bs2bdp, uint16_t *sample, int n );
 
 /* sample poits to 8bit signed integers */
 void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample, int n );
@@ -151,11 +169,20 @@ void bs2b_cross_feed_u8( t_bs2bdp bs2bdp, uint8_t *sample, int n );
 /* sample poits to 24bit signed integers native endians */
 void bs2b_cross_feed_s24( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n );
 
+/* sample poits to 24bit unsigned integers native endians */
+void bs2b_cross_feed_u24( t_bs2bdp bs2bdp, bs2b_uint24_t *sample, int n );
+
 /* sample poits to 24bit signed integers be endians */
 void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n );
 
+/* sample poits to 24bit unsigned integers be endians */
+void bs2b_cross_feed_u24be( t_bs2bdp bs2bdp, bs2b_uint24_t *sample, int n );
+
 /* sample poits to 24bit signed integers little endians */
 void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n );
+
+/* sample poits to 24bit unsigned integers little endians */
+void bs2b_cross_feed_u24le( t_bs2bdp bs2bdp, bs2b_uint24_t *sample, int n );
 
 #ifdef __cplusplus
 }	/* extern "C" */

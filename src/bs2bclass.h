@@ -45,29 +45,38 @@ public:
 	char const *runtime_version( void );
 	uint32_t    runtime_version_int( void );
 
-	void cross_feed( double   *sample, int n = 1 );
-	void cross_feed( float    *sample, int n = 1 );
-	void cross_feed( int32_t  *sample, int n = 1 );
-	void cross_feed( int16_t  *sample, int n = 1 );
-	void cross_feed( int8_t   *sample, int n = 1 );
-	void cross_feed( uint8_t  *sample, int n = 1 );
+	void cross_feed( double        *sample, int n = 1 );
+	void cross_feed( float         *sample, int n = 1 );
+	void cross_feed( int32_t       *sample, int n = 1 );
+	void cross_feed( uint32_t      *sample, int n = 1 );
+	void cross_feed( int16_t       *sample, int n = 1 );
+	void cross_feed( uint16_t      *sample, int n = 1 );
+	void cross_feed( int8_t        *sample, int n = 1 );
+	void cross_feed( uint8_t       *sample, int n = 1 );
 	void cross_feed( bs2b_int24_t  *sample, int n = 1 );
+	void cross_feed( bs2b_uint24_t *sample, int n = 1 );
 
-	void cross_feed_be( double   *sample, int n = 1 );
-	void cross_feed_be( float    *sample, int n = 1 );
-	void cross_feed_be( int32_t  *sample, int n = 1 );
-	void cross_feed_be( int16_t  *sample, int n = 1 );
-	void cross_feed_be( int8_t   *sample, int n = 1 );
-	void cross_feed_be( uint8_t  *sample, int n = 1 );
+	void cross_feed_be( double        *sample, int n = 1 );
+	void cross_feed_be( float         *sample, int n = 1 );
+	void cross_feed_be( int32_t       *sample, int n = 1 );
+	void cross_feed_be( uint32_t      *sample, int n = 1 );
+	void cross_feed_be( int16_t       *sample, int n = 1 );
+	void cross_feed_be( uint16_t      *sample, int n = 1 );
+	void cross_feed_be( int8_t        *sample, int n = 1 );
+	void cross_feed_be( uint8_t       *sample, int n = 1 );
 	void cross_feed_be( bs2b_int24_t  *sample, int n = 1 );
+	void cross_feed_be( bs2b_uint24_t *sample, int n = 1 );
 
-	void cross_feed_le( double   *sample, int n = 1 );
-	void cross_feed_le( float    *sample, int n = 1 );
-	void cross_feed_le( int32_t  *sample, int n = 1 );
-	void cross_feed_le( int16_t  *sample, int n = 1 );
-	void cross_feed_le( int8_t   *sample, int n = 1 );
-	void cross_feed_le( uint8_t  *sample, int n = 1 );
+	void cross_feed_le( double        *sample, int n = 1 );
+	void cross_feed_le( float         *sample, int n = 1 );
+	void cross_feed_le( int32_t       *sample, int n = 1 );
+	void cross_feed_le( uint32_t      *sample, int n = 1 );
+	void cross_feed_le( int16_t       *sample, int n = 1 );
+	void cross_feed_le( uint16_t      *sample, int n = 1 );
+	void cross_feed_le( int8_t        *sample, int n = 1 );
+	void cross_feed_le( uint8_t       *sample, int n = 1 );
 	void cross_feed_le( bs2b_int24_t  *sample, int n = 1 );
+	void cross_feed_le( bs2b_uint24_t *sample, int n = 1 );
 }; // class bs2b_base
 
 #endif // BS2BCLASS_H

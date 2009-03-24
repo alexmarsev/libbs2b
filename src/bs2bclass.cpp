@@ -108,9 +108,19 @@ void bs2b_base::cross_feed( int32_t *sample, int n )
 	bs2b_cross_feed_s32( bs2bdp, sample, n );
 }
 
+void bs2b_base::cross_feed( uint32_t *sample, int n )
+{
+	bs2b_cross_feed_u32( bs2bdp, sample, n );
+}
+
 void bs2b_base::cross_feed_be( int32_t *sample, int n )
 {
 	bs2b_cross_feed_s32be( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_be( uint32_t *sample, int n )
+{
+	bs2b_cross_feed_u32be( bs2bdp, sample, n );
 }
 
 void bs2b_base::cross_feed_le( int32_t *sample, int n )
@@ -118,9 +128,19 @@ void bs2b_base::cross_feed_le( int32_t *sample, int n )
 	bs2b_cross_feed_s32le( bs2bdp, sample, n );
 }
 
+void bs2b_base::cross_feed_le( uint32_t *sample, int n )
+{
+	bs2b_cross_feed_u32le( bs2bdp, sample, n );
+}
+
 void bs2b_base::cross_feed( int16_t *sample, int n )
 {
 	bs2b_cross_feed_s16( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed( uint16_t *sample, int n )
+{
+	bs2b_cross_feed_u16( bs2bdp, sample, n );
 }
 
 void bs2b_base::cross_feed_be( int16_t *sample, int n )
@@ -128,9 +148,19 @@ void bs2b_base::cross_feed_be( int16_t *sample, int n )
 	bs2b_cross_feed_s16be( bs2bdp, sample, n );
 }
 
+void bs2b_base::cross_feed_be( uint16_t *sample, int n )
+{
+	bs2b_cross_feed_u16be( bs2bdp, sample, n );
+}
+
 void bs2b_base::cross_feed_le( int16_t *sample, int n )
 {
 	bs2b_cross_feed_s16le( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_le( uint16_t *sample, int n )
+{
+	bs2b_cross_feed_u16le( bs2bdp, sample, n );
 }
 
 void bs2b_base::cross_feed( int8_t *sample, int n )
@@ -148,12 +178,27 @@ void bs2b_base::cross_feed( bs2b_int24_t *sample, int n )
 	bs2b_cross_feed_s24( bs2bdp, sample, n );
 }
 
+void bs2b_base::cross_feed( bs2b_uint24_t *sample, int n )
+{
+	bs2b_cross_feed_u24( bs2bdp, sample, n );
+}
+
 void bs2b_base::cross_feed_be( bs2b_int24_t *sample, int n )
 {
 	bs2b_cross_feed_s24be( bs2bdp, sample, n );
 }
 
+void bs2b_base::cross_feed_be( bs2b_uint24_t *sample, int n )
+{
+	bs2b_cross_feed_u24be( bs2bdp, sample, n );
+}
+
 void bs2b_base::cross_feed_le( bs2b_int24_t *sample, int n )
 {
 	bs2b_cross_feed_s24le( bs2bdp, sample, n );
+}
+
+void bs2b_base::cross_feed_le( bs2b_uint24_t *sample, int n )
+{
+	bs2b_cross_feed_u24le( bs2bdp, sample, n );
 }

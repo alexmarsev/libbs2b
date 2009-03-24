@@ -538,6 +538,33 @@ void bs2b_cross_feed_s32( t_bs2bdp bs2bdp, int32_t *sample, int n )
 	} /* if */
 } /* bs2b_cross_feed_s32() */
 
+void bs2b_cross_feed_u32( t_bs2bdp bs2bdp, uint32_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			sample_d[ 0 ] = ( double )( ( int32_t )( sample[ 0 ] ^ 0x80000000 ) );
+			sample_d[ 1 ] = ( double )( ( int32_t )( sample[ 1 ] ^ 0x80000000 ) );
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT32_VALUE ) sample_d[ 0 ] = MAX_INT32_VALUE;
+			if( sample_d[ 0 ] < MIN_INT32_VALUE ) sample_d[ 0 ] = MIN_INT32_VALUE;
+			if( sample_d[ 1 ] > MAX_INT32_VALUE ) sample_d[ 1 ] = MAX_INT32_VALUE;
+			if( sample_d[ 1 ] < MIN_INT32_VALUE ) sample_d[ 1 ] = MIN_INT32_VALUE;
+
+			sample[ 0 ] = ( ( uint32_t )sample_d[ 0 ] ) ^ 0x80000000;
+			sample[ 1 ] = ( ( uint32_t )sample_d[ 1 ] ) ^ 0x80000000;
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u32() */
+
 void bs2b_cross_feed_s32be( t_bs2bdp bs2bdp, int32_t *sample, int n )
 {
 	double sample_d[ 2 ];
@@ -574,6 +601,43 @@ void bs2b_cross_feed_s32be( t_bs2bdp bs2bdp, int32_t *sample, int n )
 		} /* while */
 	} /* if */
 } /* bs2b_cross_feed_s32be() */
+
+void bs2b_cross_feed_u32be( t_bs2bdp bs2bdp, uint32_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			#ifndef WORDS_BIGENDIAN
+			int32swap( sample );
+			int32swap( sample + 1 );
+			#endif
+
+			sample_d[ 0 ] = ( double )( ( int32_t )( sample[ 0 ] ^ 0x80000000 ) );
+			sample_d[ 1 ] = ( double )( ( int32_t )( sample[ 1 ] ^ 0x80000000 ) );
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT32_VALUE ) sample_d[ 0 ] = MAX_INT32_VALUE;
+			if( sample_d[ 0 ] < MIN_INT32_VALUE ) sample_d[ 0 ] = MIN_INT32_VALUE;
+			if( sample_d[ 1 ] > MAX_INT32_VALUE ) sample_d[ 1 ] = MAX_INT32_VALUE;
+			if( sample_d[ 1 ] < MIN_INT32_VALUE ) sample_d[ 1 ] = MIN_INT32_VALUE;
+
+			sample[ 0 ] = ( ( uint32_t )sample_d[ 0 ] ) ^ 0x80000000;
+			sample[ 1 ] = ( ( uint32_t )sample_d[ 1 ] ) ^ 0x80000000;
+
+			#ifndef WORDS_BIGENDIAN
+			int32swap( sample );
+			int32swap( sample + 1 );
+			#endif
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u32be() */
 
 void bs2b_cross_feed_s32le( t_bs2bdp bs2bdp, int32_t *sample, int n )
 {
@@ -612,6 +676,43 @@ void bs2b_cross_feed_s32le( t_bs2bdp bs2bdp, int32_t *sample, int n )
 	} /* if */
 } /* bs2b_cross_feed_s32le() */
 
+void bs2b_cross_feed_u32le( t_bs2bdp bs2bdp, uint32_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			#ifdef WORDS_BIGENDIAN
+			int32swap( sample );
+			int32swap( sample + 1 );
+			#endif
+
+			sample_d[ 0 ] = ( double )( ( int32_t )( sample[ 0 ] ^ 0x80000000 ) );
+			sample_d[ 1 ] = ( double )( ( int32_t )( sample[ 1 ] ^ 0x80000000 ) );
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT32_VALUE ) sample_d[ 0 ] = MAX_INT32_VALUE;
+			if( sample_d[ 0 ] < MIN_INT32_VALUE ) sample_d[ 0 ] = MIN_INT32_VALUE;
+			if( sample_d[ 1 ] > MAX_INT32_VALUE ) sample_d[ 1 ] = MAX_INT32_VALUE;
+			if( sample_d[ 1 ] < MIN_INT32_VALUE ) sample_d[ 1 ] = MIN_INT32_VALUE;
+
+			sample[ 0 ] = ( ( uint32_t )sample_d[ 0 ] ) ^ 0x80000000;
+			sample[ 1 ] = ( ( uint32_t )sample_d[ 1 ] ) ^ 0x80000000;
+
+			#ifdef WORDS_BIGENDIAN
+			int32swap( sample );
+			int32swap( sample + 1 );
+			#endif
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u32le() */
+
 void bs2b_cross_feed_s16( t_bs2bdp bs2bdp, int16_t *sample, int n )
 {
 	double sample_d[ 2 ];
@@ -638,6 +739,33 @@ void bs2b_cross_feed_s16( t_bs2bdp bs2bdp, int16_t *sample, int n )
 		} /* while */
 	} /* if */
 } /* bs2b_cross_feed_s16() */
+
+void bs2b_cross_feed_u16( t_bs2bdp bs2bdp, uint16_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			sample_d[ 0 ] = ( double )( ( int16_t )( sample[ 0 ] ^ 0x8000 ) );
+			sample_d[ 1 ] = ( double )( ( int16_t )( sample[ 1 ] ^ 0x8000 ) );
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT16_VALUE ) sample_d[ 0 ] = MAX_INT16_VALUE;
+			if( sample_d[ 0 ] < MIN_INT16_VALUE ) sample_d[ 0 ] = MIN_INT16_VALUE;
+			if( sample_d[ 1 ] > MAX_INT16_VALUE ) sample_d[ 1 ] = MAX_INT16_VALUE;
+			if( sample_d[ 1 ] < MIN_INT16_VALUE ) sample_d[ 1 ] = MIN_INT16_VALUE;
+
+			sample[ 0 ] = ( ( uint16_t )sample_d[ 0 ] ) ^ 0x8000;
+			sample[ 1 ] = ( ( uint16_t )sample_d[ 1 ] ) ^ 0x8000;
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u16() */
 
 void bs2b_cross_feed_s16be( t_bs2bdp bs2bdp, int16_t *sample, int n )
 {
@@ -676,6 +804,43 @@ void bs2b_cross_feed_s16be( t_bs2bdp bs2bdp, int16_t *sample, int n )
 	} /* if */
 } /* bs2b_cross_feed_s16be() */
 
+void bs2b_cross_feed_u16be( t_bs2bdp bs2bdp, uint16_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			#ifndef WORDS_BIGENDIAN
+			int16swap( sample );
+			int16swap( sample + 1 );
+			#endif
+
+			sample_d[ 0 ] = ( double )( ( int16_t )( sample[ 0 ] ^ 0x8000 ) );
+			sample_d[ 1 ] = ( double )( ( int16_t )( sample[ 1 ] ^ 0x8000 ) );
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT16_VALUE ) sample_d[ 0 ] = MAX_INT16_VALUE;
+			if( sample_d[ 0 ] < MIN_INT16_VALUE ) sample_d[ 0 ] = MIN_INT16_VALUE;
+			if( sample_d[ 1 ] > MAX_INT16_VALUE ) sample_d[ 1 ] = MAX_INT16_VALUE;
+			if( sample_d[ 1 ] < MIN_INT16_VALUE ) sample_d[ 1 ] = MIN_INT16_VALUE;
+
+			sample[ 0 ] = ( ( uint16_t )sample_d[ 0 ] ) ^ 0x8000;
+			sample[ 1 ] = ( ( uint16_t )sample_d[ 1 ] ) ^ 0x8000;
+
+			#ifndef WORDS_BIGENDIAN
+			int16swap( sample );
+			int16swap( sample + 1 );
+			#endif
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u16be() */
+
 void bs2b_cross_feed_s16le( t_bs2bdp bs2bdp, int16_t *sample, int n )
 {
 	double sample_d[ 2 ];
@@ -712,6 +877,43 @@ void bs2b_cross_feed_s16le( t_bs2bdp bs2bdp, int16_t *sample, int n )
 		} /* while */
 	} /* if */
 } /* bs2b_cross_feed_s16le() */
+
+void bs2b_cross_feed_u16le( t_bs2bdp bs2bdp, uint16_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			#ifdef WORDS_BIGENDIAN
+			int16swap( sample );
+			int16swap( sample + 1 );
+			#endif
+
+			sample_d[ 0 ] = ( double )( ( int16_t )( sample[ 0 ] ^ 0x8000 ) );
+			sample_d[ 1 ] = ( double )( ( int16_t )( sample[ 1 ] ^ 0x8000 ) );
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT16_VALUE ) sample_d[ 0 ] = MAX_INT16_VALUE;
+			if( sample_d[ 0 ] < MIN_INT16_VALUE ) sample_d[ 0 ] = MIN_INT16_VALUE;
+			if( sample_d[ 1 ] > MAX_INT16_VALUE ) sample_d[ 1 ] = MAX_INT16_VALUE;
+			if( sample_d[ 1 ] < MIN_INT16_VALUE ) sample_d[ 1 ] = MIN_INT16_VALUE;
+
+			sample[ 0 ] = ( ( uint16_t )sample_d[ 0 ] ) ^ 0x8000;
+			sample[ 1 ] = ( ( uint16_t )sample_d[ 1 ] ) ^ 0x8000;
+
+			#ifdef WORDS_BIGENDIAN
+			int16swap( sample );
+			int16swap( sample + 1 );
+			#endif
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u16le() */
 
 void bs2b_cross_feed_s8( t_bs2bdp bs2bdp, int8_t *sample, int n )
 {
@@ -794,6 +996,33 @@ void bs2b_cross_feed_s24( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 	} /* if */
 } /* bs2b_cross_feed_s24() */
 
+void bs2b_cross_feed_u24( t_bs2bdp bs2bdp, bs2b_uint24_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			sample_d[ 0 ] = uint242double( sample )     - MAX_INT24_VALUE - 1.0;
+			sample_d[ 1 ] = uint242double( sample + 1 ) - MAX_INT24_VALUE - 1.0;
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT24_VALUE ) sample_d[ 0 ] = MAX_INT24_VALUE;
+			if( sample_d[ 0 ] < MIN_INT24_VALUE ) sample_d[ 0 ] = MIN_INT24_VALUE;
+			if( sample_d[ 1 ] > MAX_INT24_VALUE ) sample_d[ 1 ] = MAX_INT24_VALUE;
+			if( sample_d[ 1 ] < MIN_INT24_VALUE ) sample_d[ 1 ] = MIN_INT24_VALUE;
+
+			double2uint24( sample_d[ 0 ] + MAX_INT24_VALUE + 1.0 , sample );
+			double2uint24( sample_d[ 1 ] + MAX_INT24_VALUE + 1.0 , sample + 1 );
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u24() */
+
 void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 {
 	double sample_d[ 2 ];
@@ -831,6 +1060,43 @@ void bs2b_cross_feed_s24be( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 	} /* if */
 } /* bs2b_cross_feed_s24be() */
 
+void bs2b_cross_feed_u24be( t_bs2bdp bs2bdp, bs2b_uint24_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			#ifndef WORDS_BIGENDIAN
+			int24swap( ( bs2b_uint24_t * )sample );
+			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
+			#endif
+
+			sample_d[ 0 ] = uint242double( sample )     - MAX_INT24_VALUE - 1.0;
+			sample_d[ 1 ] = uint242double( sample + 1 ) - MAX_INT24_VALUE - 1.0;
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT24_VALUE ) sample_d[ 0 ] = MAX_INT24_VALUE;
+			if( sample_d[ 0 ] < MIN_INT24_VALUE ) sample_d[ 0 ] = MIN_INT24_VALUE;
+			if( sample_d[ 1 ] > MAX_INT24_VALUE ) sample_d[ 1 ] = MAX_INT24_VALUE;
+			if( sample_d[ 1 ] < MIN_INT24_VALUE ) sample_d[ 1 ] = MIN_INT24_VALUE;
+
+			double2uint24( sample_d[ 0 ] + MAX_INT24_VALUE + 1.0 , sample );
+			double2uint24( sample_d[ 1 ] + MAX_INT24_VALUE + 1.0 , sample + 1 );
+
+			#ifndef WORDS_BIGENDIAN
+			int24swap( ( bs2b_uint24_t * )sample );
+			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
+			#endif
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u24be() */
+
 void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 {
 	double sample_d[ 2 ];
@@ -867,3 +1133,40 @@ void bs2b_cross_feed_s24le( t_bs2bdp bs2bdp, bs2b_int24_t *sample, int n )
 		} /* while */
 	} /* if */
 } /* bs2b_cross_feed_s24le() */
+
+void bs2b_cross_feed_u24le( t_bs2bdp bs2bdp, bs2b_uint24_t *sample, int n )
+{
+	double sample_d[ 2 ];
+
+	if( n > 0 )
+	{
+		while( n-- )
+		{
+			#ifdef WORDS_BIGENDIAN
+			int24swap( ( bs2b_uint24_t * )sample );
+			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
+			#endif
+
+			sample_d[ 0 ] = uint242double( sample )     - MAX_INT24_VALUE - 1.0;
+			sample_d[ 1 ] = uint242double( sample + 1 ) - MAX_INT24_VALUE - 1.0;
+
+			cross_feed_d( bs2bdp, sample_d );
+
+			/* Clipping of overloaded samples */
+			if( sample_d[ 0 ] > MAX_INT24_VALUE ) sample_d[ 0 ] = MAX_INT24_VALUE;
+			if( sample_d[ 0 ] < MIN_INT24_VALUE ) sample_d[ 0 ] = MIN_INT24_VALUE;
+			if( sample_d[ 1 ] > MAX_INT24_VALUE ) sample_d[ 1 ] = MAX_INT24_VALUE;
+			if( sample_d[ 1 ] < MIN_INT24_VALUE ) sample_d[ 1 ] = MIN_INT24_VALUE;
+
+			double2uint24( sample_d[ 0 ] + MAX_INT24_VALUE + 1.0 , sample );
+			double2uint24( sample_d[ 1 ] + MAX_INT24_VALUE + 1.0 , sample + 1 );
+
+			#ifdef WORDS_BIGENDIAN
+			int24swap( ( bs2b_uint24_t * )sample );
+			int24swap( ( bs2b_uint24_t * )( sample + 1 ) );
+			#endif
+
+			sample += 2;
+		} /* while */
+	} /* if */
+} /* bs2b_cross_feed_u24le() */
