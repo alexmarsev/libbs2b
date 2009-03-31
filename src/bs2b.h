@@ -27,23 +27,38 @@
 #include "bs2bversion.h"
 #include "bs2btypes.h"
 
-/* Number of crossfeed levels */
-#define BS2B_CLEVELS           3
+/* Minimum/maximum sample rate (Hz) */
+#define BS2B_MINSRATE 2000
+#define BS2B_MAXSRATE 384000
 
-/* Normal crossfeed levels */
-#define BS2B_HIGH_CLEVEL       3
-#define BS2B_MIDDLE_CLEVEL     2
-#define BS2B_LOW_CLEVEL        1
+/* Minimum/maximum cut frequency (Hz) */
+/* bs2b_set_level_fcut() */
+#define BS2B_MINFCUT 300
+#define BS2B_MAXFCUT 1000
 
-/* Easy crossfeed levels */
-#define BS2B_HIGH_ECLEVEL      BS2B_HIGH_CLEVEL    + BS2B_CLEVELS
-#define BS2B_MIDDLE_ECLEVEL    BS2B_MIDDLE_CLEVEL  + BS2B_CLEVELS
-#define BS2B_LOW_ECLEVEL       BS2B_LOW_CLEVEL     + BS2B_CLEVELS
+/* Minimum/maximum feed level (dB * 10 @ low frequencies) */
+/* bs2b_set_level_feed() */
+#define BS2B_MINFEED 10   /* 1 dB */
+#define BS2B_MAXFEED 150  /* 15 dB */
+
+/* Normal crossfeed levels (Obsolete) */
+#define BS2B_HIGH_CLEVEL     ( ( uint32_t )700 | ( ( uint32_t )30 << 16 ) )
+#define BS2B_MIDDLE_CLEVEL   ( ( uint32_t )500 | ( ( uint32_t )45 << 16 ) )
+#define BS2B_LOW_CLEVEL      ( ( uint32_t )360 | ( ( uint32_t )60 << 16 ) )
+
+/* Easy crossfeed levels (Obsolete) */
+#define BS2B_HIGH_ECLEVEL    ( ( uint32_t )700 | ( ( uint32_t )60 << 16 ) )
+#define BS2B_MIDDLE_ECLEVEL  ( ( uint32_t )500 | ( ( uint32_t )72 << 16 ) )
+#define BS2B_LOW_ECLEVEL     ( ( uint32_t )360 | ( ( uint32_t )84 << 16 ) )
 
 /* Default crossfeed levels */
-#define BS2B_DEFAULT_CLEVEL    BS2B_HIGH_ECLEVEL
+/* bs2b_set_level() */
+#define BS2B_DEFAULT_CLEVEL  ( ( uint32_t )700 | ( ( uint32_t )45 << 16 ) )
+#define BS2B_CMOY_CLEVEL     ( ( uint32_t )700 | ( ( uint32_t )60 << 16 ) )
+#define BS2B_JMEIER_CLEVEL   ( ( uint32_t )650 | ( ( uint32_t )95 << 16 ) )
+
 /* Default sample rate (Hz) */
-#define BS2B_DEFAULT_SRATE     44100
+#define BS2B_DEFAULT_SRATE   44100
 
 typedef struct
 {
@@ -71,13 +86,30 @@ t_bs2bdp bs2b_open( void );
 /* Close */
 void bs2b_close( t_bs2bdp bs2bdp );
 
-/* Sets a new coefficients with new crossfeed level value.
- * level - crossfeed level of *LEVEL values.
+/* Sets a new coefficients by new crossfeed value.
+ * level = ( ( uint32_t )fcut | ( ( uint32_t )feed << 16 ) )
+ * where 'feed' is crossfeeding level at low frequencies (dB * 10)
+ * and 'fcut' is cut frecuency (Hz)
  */
 void bs2b_set_level( t_bs2bdp bs2bdp, uint32_t level );
 
-/* Return current crossfeed level value */
+/* Return a current crossfeed level value. */
 uint32_t bs2b_get_level( t_bs2bdp bs2bdp );
+
+/* Sets a new coefficients by new cut frecuency value (Hz). */
+void bs2b_set_level_fcut( t_bs2bdp bs2bdp, int fcut );
+
+/* Return a current cut frecuency value (Hz). */
+int bs2b_get_level_fcut( t_bs2bdp bs2bdp );
+
+/* Sets a new coefficients by new crossfeeding level value (dB * 10). */
+void bs2b_set_level_feed( t_bs2bdp bs2bdp, int feed );
+
+/* Return a current crossfeeding level value (dB * 10). */
+int bs2b_get_level_feed( t_bs2bdp bs2bdp );
+
+/* Return a current delay value at low frequencies (micro seconds). */
+int bs2b_get_level_delay( t_bs2bdp bs2bdp );
 
 /* Clear buffers and sets a new coefficients with new sample rate value.
  * srate - sample rate by Hz.

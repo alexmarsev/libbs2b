@@ -23,6 +23,7 @@
 
 #include <math.h>
 #include <malloc.h>
+#include <memory.h>
 
 #include "bs2b.h"
 
@@ -129,59 +130,37 @@ static void double2uint24( double in, bs2b_uint24_t *out )
 /* Set up bs2b data. */
 static void init( t_bs2bdp bs2bdp )
 {
-	double Fc_lo, Fc_hi;
-	double G_lo,  G_hi;
+	double Fc_lo; /* Lowpass filter cut frequency (Hz) */
+	double Fc_hi; /* Highboost filter cut frequency (Hz) */
+	double G_lo;  /* Lowpass filter gain (multiplier) */
+	double G_hi;  /* Highboost filter gain (multiplier) */
+	double GB_lo; /* Lowpass filter gain (dB) */
+	double GB_hi; /* Highboost filter gain (dB) ( 0 dB is highs ) */
+	double level; /* Feeding level (dB) ( level = GB_lo - GB_hi ) */
 	double x;
 
-	if( ( bs2bdp->srate > 384000 ) || ( bs2bdp->srate < 2000 ) )
+	if( ( bs2bdp->srate > BS2B_MAXSRATE ) || ( bs2bdp->srate < BS2B_MINSRATE ) )
 		bs2bdp->srate = BS2B_DEFAULT_SRATE;
-	
-	switch( bs2bdp->level )
+
+	Fc_lo = bs2bdp->level & 0xffff;
+	level = ( bs2bdp->level & 0xffff0000 ) >> 16;
+
+	if( ( Fc_lo > BS2B_MAXFCUT ) || ( Fc_lo < BS2B_MINFCUT ) ||
+		( level > BS2B_MAXFEED ) || ( level < BS2B_MINFEED ) )
 	{
-	case BS2B_LOW_CLEVEL: /* Low crossfeed level */
-		Fc_lo = 360.0;
-		Fc_hi = 501.0;
-		G_lo  = 0.398107170553497;
-		G_hi  = 0.205671765275719;
-		break;
+		bs2bdp->level = BS2B_DEFAULT_CLEVEL;
+		Fc_lo = bs2bdp->level & 0xffff;
+		level = ( bs2bdp->level & 0xffff0000 ) >> 16;
+	}
 
-	case BS2B_MIDDLE_CLEVEL: /* Middle crossfeed level */
-		Fc_lo = 500.0;
-		Fc_hi = 711.0;
-		G_lo  = 0.459726988530872;
-		G_hi  = 0.228208484414988;
-		break;
+	level /= 10.0;
 
-	case BS2B_HIGH_CLEVEL: /* High crossfeed level */
-		Fc_lo = 700.0;
-		Fc_hi = 1021.0;
-		G_lo  = 0.530884444230988;
-		G_hi  = 0.250105790667544;
-		break;
+	GB_lo = level * -5.0 / 6.0 - 3.0;
+	GB_hi = level / 6.0 - 3.0;
 
-	case BS2B_LOW_ECLEVEL: /* Low easy crossfeed level */
-		Fc_lo = 360.0;
-		Fc_hi = 494.0;
-		G_lo  = 0.316227766016838;
-		G_hi  = 0.168236228897329;
-		break;
-
-	case BS2B_MIDDLE_ECLEVEL: /* Middle easy crossfeed level */
-		Fc_lo = 500.0;
-		Fc_hi = 689.0;
-		G_lo  = 0.354813389233575;
-		G_hi  = 0.187169483835901;
-		break;
-
-	default: /* High easy crossfeed level */
-		bs2bdp->level = BS2B_HIGH_ECLEVEL;
-
-		Fc_lo = 700.0;
-		Fc_hi = 975.0;
-		G_lo  = 0.398107170553497;
-		G_hi  = 0.205671765275719;
-		break;
-	} /* switch */
+	G_lo  = pow( 10, GB_lo / 20.0 );
+	G_hi  = 1.0 - pow( 10, GB_hi / 20.0 );
+	Fc_hi = Fc_lo * pow( 2.0, ( GB_lo - 20.0 * log10( G_hi ) ) / 12.0 );
 
 	/* $fc = $Fc / $s;
 	 * $d  = 1 / 2 / pi / $fc;
@@ -245,7 +224,7 @@ t_bs2bdp bs2b_open( void )
 
 	if( bs2bdp = malloc( sizeof( t_bs2bd ) ) )
 	{
-		bs2bdp->srate = 0;
+		memset( bs2bdp, 0, sizeof( t_bs2bd ) );
 		bs2b_set_srate( bs2bdp, BS2B_DEFAULT_SRATE );
 	}
 
@@ -272,6 +251,52 @@ uint32_t bs2b_get_level( t_bs2bdp bs2bdp )
 	return bs2bdp->level;
 } /* bs2b_get_level() */
 
+void bs2b_set_level_fcut( t_bs2bdp bs2bdp, int fcut )
+{
+	uint32_t level;
+
+	if( ! bs2bdp ) return;
+
+	level = bs2bdp->level;
+	level &= 0xffff0000;
+	level |= ( uint32_t )fcut;
+	bs2b_set_level( bs2bdp, level );
+} /* bs2b_set_level_fcut() */
+
+int bs2b_get_level_fcut( t_bs2bdp bs2bdp )
+{
+	return( ( int )( bs2bdp->level & 0xffff ) );
+} /* bs2b_get_level_fcut() */
+
+void bs2b_set_level_feed( t_bs2bdp bs2bdp, int feed )
+{
+	uint32_t level;
+
+	if( ! bs2bdp ) return;
+
+	level = bs2bdp->level;
+	level &= ( uint32_t )0xffff;
+	level |= ( uint32_t )feed << 16;
+	bs2b_set_level( bs2bdp, level );
+} /* bs2b_set_level_feed() */
+
+int bs2b_get_level_feed( t_bs2bdp bs2bdp )
+{
+	return( ( int )( ( bs2bdp->level & 0xffff0000 ) >> 16 ) );
+} /* bs2b_get_level_feed() */
+
+int bs2b_get_level_delay( t_bs2bdp bs2bdp )
+{
+	int x;
+	
+	x = bs2bdp->level & 0xffff; /* get cut frequency */
+
+	if( ( x > BS2B_MAXFCUT ) || ( x < BS2B_MINFCUT ) )
+		return 0;
+
+	return( ( 18700 / x ) * 10 );
+} /* bs2b_get_level_delay() */
+
 void bs2b_set_srate( t_bs2bdp bs2bdp, uint32_t srate )
 {
 	if( ! bs2bdp ) return;
@@ -290,15 +315,8 @@ uint32_t bs2b_get_srate( t_bs2bdp bs2bdp )
 
 void bs2b_clear( t_bs2bdp bs2bdp )
 {
-	int loopv;
-
 	if( ! bs2bdp ) return;
-
-	loopv = sizeof( bs2bdp->lfs );
-	while( loopv )
-	{
-		( ( char * )&bs2bdp->lfs )[ --loopv ] = 0;
-	}
+	memset( &bs2bdp->lfs, 0, sizeof( bs2bdp->lfs ) );
 } /* bs2b_clear() */
 
 int bs2b_is_clear( t_bs2bdp bs2bdp )

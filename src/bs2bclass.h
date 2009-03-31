@@ -37,6 +37,11 @@ public:
 
 	void     set_level( uint32_t level );
 	uint32_t get_level();
+	void     set_level_fcut( int fcut );
+	int      get_level_fcut();
+	void     set_level_feed( int feed );
+	int      get_level_feed();
+	int      get_level_delay();
 	void     set_srate( uint32_t srate );
 	uint32_t get_srate();
 	void     clear();

@@ -43,6 +43,31 @@ uint32_t bs2b_base::get_level()
 	return bs2b_get_level( bs2bdp );
 }
 
+void bs2b_base::set_level_fcut( int fcut )
+{
+	bs2b_set_level_fcut( bs2bdp, fcut );
+}
+
+int bs2b_base::get_level_fcut()
+{
+	return bs2b_get_level_fcut( bs2bdp );
+}
+
+void bs2b_base::set_level_feed( int feed )
+{
+	bs2b_set_level_feed( bs2bdp, feed );
+}
+
+int bs2b_base::get_level_feed()
+{
+	return bs2b_get_level_feed( bs2bdp );
+}
+
+int bs2b_base::get_level_delay()
+{
+	return bs2b_get_level_delay( bs2bdp );
+}
+
 void bs2b_base::set_srate( uint32_t srate )
 {
 	bs2b_set_srate( bs2bdp, srate );
