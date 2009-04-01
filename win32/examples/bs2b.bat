@@ -1,7 +1,7 @@
 @echo off
 
 set BS2B="C:\Program Files\bs2b\bs2bconvert.exe"
-set BS2BOPT=-6
+set BS2BOPT=-c
 
 set BC=%BS2B% %BS2BOPT%
 

@@ -38,15 +38,15 @@ static void copy_data( SNDFILE *outfile, SNDFILE *infile, t_bs2bdp bs2bdp );
 static void print_usage( char *progname )
 {
 	printf( "\n"
-		"    Bauer stereophonic-to-binaural DSP converter. "
-		"Version %s\n",
+		"Bauer stereophonic-to-binaural DSP converter. Version %s\n\n",
 		BS2B_VERSION_STR );
-	printf( "Usage : %s [-x] <input file> <output file>\n", progname );
-	printf( "\n"
-		"    'x' is number of:\n"
-		"    1,2,3 - Low to High crossfeed levels,\n"
-		"    4,5,6 - Low to High crossfeed levels of 'Easy' version\n"
-		"    The default crossfeed level is 6\n" );
+	printf(
+		"Usage : %s [-x] <input file> <output file>\n", progname );
+	printf(
+		" x=d|c|m:\n"
+		"   d - default preset     - 700Hz/260us, 4.5 dB;\n"
+		"   c - Chu Moy's preset   - 700Hz/260us, 6.0 dB;\n"
+		"   m - Jan Meier's preset - 650Hz/280us, 9.5 dB.\n" );
 } /* print_usage() */
 
 int main( int argc, char *argv[] )
@@ -84,25 +84,21 @@ int main( int argc, char *argv[] )
 
 		switch( argv[ 1 ][ 1 ] )
 		{
-		case '1':
-			level = BS2B_LOW_CLEVEL;
+		case 'c':
+			level = BS2B_CMOY_CLEVEL;
 			break;
 
-		case '2':
-			level = BS2B_MIDDLE_CLEVEL;
+		case 'm':
+			level = BS2B_JMEIER_CLEVEL;
 			break;
 
-		case '3':
-			level = BS2B_HIGH_CLEVEL;
+		case 'd':
+			level = BS2B_DEFAULT_CLEVEL;
 			break;
 
-		case '4':
-			level = BS2B_LOW_ECLEVEL;
-			break;
-
-		case '5':
-			level = BS2B_MIDDLE_ECLEVEL;
-			break;
+		default:
+			print_usage( progname );
+			return 1;
 		} /* switch */
 	}
 
@@ -137,12 +133,8 @@ int main( int argc, char *argv[] )
 		return 1;
 	}
 
-	{
-		char *levels[] = { "low", "middle", "high", "low easy", "middle easy", "high easy" };
-
-		printf( "Converting file %s to file %s\nsample rate=%u, crossfeed level=%s...",
-			infilename, outfilename, srate, levels[ level - 1 ] );
-	}
+	printf( "Converting file %s to file %s\nsample rate=%u...",
+		infilename, outfilename, srate );
 
 	if( !( bs2bdp = bs2b_open() ) )
 	{

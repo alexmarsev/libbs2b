@@ -5,7 +5,7 @@ set BS2B="C:\Program Files\bs2b\bs2bconvert.exe"
 
 set LAMEDECODEOPT=--decode
 set LAMEENCODEOPT=--preset standard --tc bs2b
-set BS2BOPT=-6
+set BS2BOPT=-c
 
 set TW=tmpfile.wav
 set TWB=tmpfile-bs2b.wav
