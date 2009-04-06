@@ -287,14 +287,14 @@ int bs2b_get_level_feed( t_bs2bdp bs2bdp )
 
 int bs2b_get_level_delay( t_bs2bdp bs2bdp )
 {
-	int x;
+	int fcut;
 	
-	x = bs2bdp->level & 0xffff; /* get cut frequency */
+	fcut = bs2bdp->level & 0xffff; /* get cut frequency */
 
-	if( ( x > BS2B_MAXFCUT ) || ( x < BS2B_MINFCUT ) )
+	if( ( fcut > BS2B_MAXFCUT ) || ( fcut < BS2B_MINFCUT ) )
 		return 0;
 
-	return( ( 18700 / x ) * 10 );
+	return bs2b_level_delay( fcut );
 } /* bs2b_get_level_delay() */
 
 void bs2b_set_srate( t_bs2bdp bs2bdp, uint32_t srate )

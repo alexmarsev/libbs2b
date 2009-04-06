@@ -60,6 +60,9 @@
 /* Default sample rate (Hz) */
 #define BS2B_DEFAULT_SRATE   44100
 
+/* A delay at low frequency by microseconds according to cut frequency */
+#define bs2b_level_delay( fcut ) ( ( 18700 / fcut ) * 10 )
+
 typedef struct
 {
 	uint32_t level;              /* Crossfeed level */
