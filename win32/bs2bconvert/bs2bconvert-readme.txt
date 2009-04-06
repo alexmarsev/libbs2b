@@ -13,8 +13,7 @@ libsndfile is copyright by Erik de Castro Lopo.
 http://www.mega-nerd.com/libsndfile/
 
 Usage : bs2bconvert.exe [-x] <input file> <output file>
-
-    'x' is number of:
-    1,2,3 - Low to High crossfeed levels,
-    4,5,6 - Low to High crossfeed levels of 'Easy' version
-    The default crossfeed level is 6
+ x=d|c|m:
+   d - default preset     - 700Hz/260us, 4.5 dB;
+   c - Chu Moy's preset   - 700Hz/260us, 6.0 dB;
+   m - Jan Meier's preset - 650Hz/280us, 9.5 dB.
