@@ -1,6 +1,8 @@
 EXTRA_DIST = \
 	bs2bconvert/bs2bconvert.vcproj \
+	bs2bconvert/bs2bconvert-readme.txt \
 	bs2bstream/bs2bstream.vcproj \
+	bs2bstream/bs2bstream-readme.txt \
 	\
 	examples/bs2b.bat \
 	examples/bs2bwav.bat \
