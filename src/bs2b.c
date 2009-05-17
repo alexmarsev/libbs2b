@@ -22,7 +22,7 @@
  */
 
 #include <math.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <memory.h>
 
 #include "bs2b.h"
