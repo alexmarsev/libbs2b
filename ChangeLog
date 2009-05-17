@@ -1,3 +1,7 @@
+2009-05-17 Sebastian Pipping <sebastian@pipping.org>
+	* Apply compile fix patch for FreeBSD
+	by Diego Elio Pettenò (flameeyes@gentoo)
+
 2009-03-31 Boris Mikhaylov <http://www.tmn.ru/~bor>
 
 	3.0.0
