@@ -136,7 +136,7 @@ int main( int argc, char *argv[] )
 	printf( "Converting file %s to file %s\nsample rate=%u...",
 		infilename, outfilename, srate );
 
-	if( !( bs2bdp = bs2b_open() ) )
+	if( NULL == ( bs2bdp = bs2b_open() ) )
 	{
 		puts( "Not able to allocate data\n" );
 		sf_close( infile );

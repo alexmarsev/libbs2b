@@ -1,3 +1,6 @@
+2009-05-18 Boris Mikhaylov <http://www.tmn.ru/~bor>
+	* Fixed for higher compile warning level.
+
 2009-05-17 Sebastian Pipping <sebastian@pipping.org>
 	* Apply compile fix patch for FreeBSD
 	by Diego Elio Petteno (flameeyes@gentoo)

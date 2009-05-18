@@ -195,7 +195,7 @@ int main( int argc, char *argv[] )
 			while( 2 == fread( sample, sizeof( int8_t ), 2, stdin ) )
 			{
 				if( unsigned_flag )
-					bs2b_cross_feed_u8( bs2bdp, sample, 1 );
+					bs2b_cross_feed_u8( bs2bdp, ( uint8_t * )sample, 1 );
 				else
 					bs2b_cross_feed_s8( bs2bdp, sample, 1 );
 
@@ -214,7 +214,7 @@ int main( int argc, char *argv[] )
 				case 'b':
 					{
 						if( unsigned_flag )
-							bs2b_cross_feed_u16be( bs2bdp, sample, 1 );
+							bs2b_cross_feed_u16be( bs2bdp, ( uint16_t * )sample, 1 );
 						else
 							bs2b_cross_feed_s16be( bs2bdp, sample, 1 );
 					}
@@ -223,7 +223,7 @@ int main( int argc, char *argv[] )
 				case 'l':
 					{
 						if( unsigned_flag )
-							bs2b_cross_feed_u16le( bs2bdp, sample, 1 );
+							bs2b_cross_feed_u16le( bs2bdp, ( uint16_t * )sample, 1 );
 						else
 							bs2b_cross_feed_s16le( bs2bdp, sample, 1 );
 					}
@@ -232,7 +232,7 @@ int main( int argc, char *argv[] )
 				default:
 					{
 						if( unsigned_flag )
-							bs2b_cross_feed_u16( bs2bdp, sample, 1 );
+							bs2b_cross_feed_u16( bs2bdp, ( uint16_t * )sample, 1 );
 						else
 							bs2b_cross_feed_s16( bs2bdp, sample, 1 );
 					}
@@ -294,7 +294,7 @@ int main( int argc, char *argv[] )
 				case 'b':
 					{
 						if( unsigned_flag )
-							bs2b_cross_feed_u32be( bs2bdp, sample, 1 );
+							bs2b_cross_feed_u32be( bs2bdp, ( uint32_t * )sample, 1 );
 						else
 							bs2b_cross_feed_s32be( bs2bdp, sample, 1 );
 					}
@@ -303,7 +303,7 @@ int main( int argc, char *argv[] )
 				case 'l':
 					{
 						if( unsigned_flag )
-							bs2b_cross_feed_u32le( bs2bdp, sample, 1 );
+							bs2b_cross_feed_u32le( bs2bdp, ( uint32_t * )sample, 1 );
 						else
 							bs2b_cross_feed_s32le( bs2bdp, sample, 1 );
 					}
@@ -312,7 +312,7 @@ int main( int argc, char *argv[] )
 				default:
 					{
 						if( unsigned_flag )
-							bs2b_cross_feed_u32( bs2bdp, sample, 1 );
+							bs2b_cross_feed_u32( bs2bdp, ( uint32_t * )sample, 1 );
 						else
 							bs2b_cross_feed_s32( bs2bdp, sample, 1 );
 					}

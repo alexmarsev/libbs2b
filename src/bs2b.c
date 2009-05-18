@@ -220,9 +220,9 @@ static void cross_feed_d( t_bs2bdp bs2bdp, double *sample )
 
 t_bs2bdp bs2b_open( void )
 {
-	t_bs2bdp bs2bdp = 0;
+	t_bs2bdp bs2bdp = NULL;
 
-	if( bs2bdp = malloc( sizeof( t_bs2bd ) ) )
+	if( NULL != ( bs2bdp = malloc( sizeof( t_bs2bd ) ) ) )
 	{
 		memset( bs2bdp, 0, sizeof( t_bs2bd ) );
 		bs2b_set_srate( bs2bdp, BS2B_DEFAULT_SRATE );
@@ -238,7 +238,7 @@ void bs2b_close( t_bs2bdp bs2bdp )
 
 void bs2b_set_level( t_bs2bdp bs2bdp, uint32_t level )
 {
-	if( ! bs2bdp ) return;
+	if( NULL == bs2bdp ) return;
 
 	if( level == bs2bdp->level ) return;
 
@@ -255,7 +255,7 @@ void bs2b_set_level_fcut( t_bs2bdp bs2bdp, int fcut )
 {
 	uint32_t level;
 
-	if( ! bs2bdp ) return;
+	if( NULL == bs2bdp ) return;
 
 	level = bs2bdp->level;
 	level &= 0xffff0000;
@@ -272,7 +272,7 @@ void bs2b_set_level_feed( t_bs2bdp bs2bdp, int feed )
 {
 	uint32_t level;
 
-	if( ! bs2bdp ) return;
+	if( NULL == bs2bdp ) return;
 
 	level = bs2bdp->level;
 	level &= ( uint32_t )0xffff;
@@ -299,7 +299,7 @@ int bs2b_get_level_delay( t_bs2bdp bs2bdp )
 
 void bs2b_set_srate( t_bs2bdp bs2bdp, uint32_t srate )
 {
-	if( ! bs2bdp ) return;
+	if( NULL == bs2bdp ) return;
 
 	if( srate == bs2bdp->srate ) return;
 
@@ -315,7 +315,7 @@ uint32_t bs2b_get_srate( t_bs2bdp bs2bdp )
 
 void bs2b_clear( t_bs2bdp bs2bdp )
 {
-	if( ! bs2bdp ) return;
+	if( NULL == bs2bdp ) return;
 	memset( &bs2bdp->lfs, 0, sizeof( bs2bdp->lfs ) );
 } /* bs2b_clear() */
 
@@ -592,8 +592,8 @@ void bs2b_cross_feed_s32be( t_bs2bdp bs2bdp, int32_t *sample, int n )
 		while( n-- )
 		{
 			#ifndef WORDS_BIGENDIAN
-			int32swap( sample );
-			int32swap( sample + 1 );
+			int32swap( ( uint32_t * )sample );
+			int32swap( ( uint32_t * )( sample + 1 ) );
 			#endif
 
 			sample_d[ 0 ] = ( double )sample[ 0 ];
@@ -611,8 +611,8 @@ void bs2b_cross_feed_s32be( t_bs2bdp bs2bdp, int32_t *sample, int n )
 			sample[ 1 ] = ( int32_t )sample_d[ 1 ];
 
 			#ifndef WORDS_BIGENDIAN
-			int32swap( sample );
-			int32swap( sample + 1 );
+			int32swap( ( uint32_t * )sample );
+			int32swap( ( uint32_t * )( sample + 1 ) );
 			#endif
 
 			sample += 2;
@@ -794,8 +794,8 @@ void bs2b_cross_feed_s16be( t_bs2bdp bs2bdp, int16_t *sample, int n )
 		while( n-- )
 		{
 			#ifndef WORDS_BIGENDIAN
-			int16swap( sample );
-			int16swap( sample + 1 );
+			int16swap( ( uint16_t * )sample );
+			int16swap( ( uint16_t * )( sample + 1 ) );
 			#endif
 
 			sample_d[ 0 ] = ( double )sample[ 0 ];
@@ -813,8 +813,8 @@ void bs2b_cross_feed_s16be( t_bs2bdp bs2bdp, int16_t *sample, int n )
 			sample[ 1 ] = ( int16_t )sample_d[ 1 ];
 
 			#ifndef WORDS_BIGENDIAN
-			int16swap( sample );
-			int16swap( sample + 1 );
+			int16swap( ( uint16_t * )sample );
+			int16swap( ( uint16_t * )( sample + 1 ) );
 			#endif
 
 			sample += 2;
