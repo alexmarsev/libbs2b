@@ -34,7 +34,7 @@
 /* Minimum/maximum cut frequency (Hz) */
 /* bs2b_set_level_fcut() */
 #define BS2B_MINFCUT 300
-#define BS2B_MAXFCUT 1000
+#define BS2B_MAXFCUT 2000
 
 /* Minimum/maximum feed level (dB * 10 @ low frequencies) */
 /* bs2b_set_level_feed() */

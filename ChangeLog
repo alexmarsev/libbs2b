@@ -1,5 +1,7 @@
 2009-05-18 Boris Mikhaylov <http://www.tmn.ru/~bor>
 	* Fixed for higher compile warning level.
+	* Extended cut frequency set from [300..1000] to [300..2000] Hz
+	(BS2B_MAXFCUT)
 
 2009-05-17 Sebastian Pipping <sebastian@pipping.org>
 	* Apply compile fix patch for FreeBSD
