@@ -36,20 +36,25 @@ static void print_usage( char *progname )
 {
 	fprintf( stderr, "\n"
 		"Bauer stereophonic-to-binaural DSP stream converter. Version %s\n"
-		"LPCM stdin-stdout\n\n",
+		"Stereo interleaved LPCM raw data stdin-stdout converting.\n\n",
 		BS2B_VERSION_STR );
-	fprintf( stderr, "Usage : %s [-h] [-u] [-e E] [-b B] [-r R] [-l L]\n",
+	fprintf( stderr, "Usage : %s [-h] [-u] [-e E] [-b B] [-r R] [-l L|(L1 L2)]\n",
 		progname );
 	fprintf( stderr,
 		"-h - this help.\n"
 		"-u - unsigned data. Default is signed.\n"
 		"-e - endians, E = b|l|n (big|little|native). Default is native.\n"
-		"-b - bits per integer sample, B=8|16|24|32. Default is 16 bit.\n"
-		"-r - sample rate, R = <value by kHz>. Default is 44.1 kHz.\n"
-		"-l - crossfeed level, L=d|c|m:\n"
+		"-b - bits per integer sample, B = 8|16|24|32. Default is 16 bit.\n"
+		"-r - sample rate, R = <value by kHz>. Default is %.3f kHz.\n"
+		"-l - crossfeed level, L = d|c|m:\n"
 		"     d - default preset     - 700Hz/260us, 4.5 dB;\n"
 		"     c - Chu Moy's preset   - 700Hz/260us, 6.0 dB;\n"
-		"     m - Jan Meier's preset - 650Hz/280us, 9.5 dB.\n" );
+		"     m - Jan Meier's preset - 650Hz/280us, 9.5 dB.\n"
+		"     Or L1 = [%d..%d] mB of feed level (%d..%d dB)\n"
+		"     and L2 = [%d..%d] Hz of cut frequency.\n",
+		BS2B_DEFAULT_SRATE / 1000.0,
+		BS2B_MINFEED, BS2B_MAXFEED, BS2B_MINFEED / 10, BS2B_MAXFEED / 10,
+		BS2B_MINFCUT, BS2B_MAXFCUT );
 } /* print_usage() */
 
 int main( int argc, char *argv[] )
@@ -59,8 +64,8 @@ int main( int argc, char *argv[] )
 
 	t_bs2bdp bs2bdp;
 
-	uint32_t srate = 44100;
-	uint32_t level = 'd';
+	uint32_t srate = BS2B_DEFAULT_SRATE;
+	uint32_t level = BS2B_DEFAULT_CLEVEL;
 	int bits = 16;
 	int unsigned_flag = 0;
 	int endians = 'n';
@@ -72,8 +77,6 @@ int main( int argc, char *argv[] )
 
 	for( i = 1; i < argc; i++ )
 	{
-		double df;
-
 		if( '-' != argv[ i ][ 0 ] )
 		{
 			print_usage( progname );
@@ -130,9 +133,8 @@ int main( int argc, char *argv[] )
 						print_usage( progname );
 						return 1;
 					}
-					df = atof( argv[ i ] );
-					srate = ( uint32_t )( df * 1000 );
-					if( srate > 384000 || srate < 2000 )
+					srate = ( uint32_t )( atof( argv[ i ] ) * 1000.0 );
+					if( srate < BS2B_MINSRATE || srate > BS2B_MAXSRATE )
 					{
 						print_usage( progname );
 						return 1;
@@ -145,14 +147,38 @@ int main( int argc, char *argv[] )
 						print_usage( progname );
 						return 1;
 					}
-					level = argv[ i ][ 0 ];
-					if( level != 'd' &&
-						level != 'c' &&
-						level != 'm' )
+
+					switch( argv[ i ][ 0 ] )
 					{
-						print_usage( progname );
-						return 1;
-					}
+					case 'd':
+						level = BS2B_DEFAULT_CLEVEL;
+						break;
+					case 'c':
+						level = BS2B_CMOY_CLEVEL;
+						break;
+					case 'm':
+						level = BS2B_JMEIER_CLEVEL;
+						break;
+					default:
+						{
+							int feed, fcut;
+
+							feed = atoi( argv[ i ] );
+							if( ++i >= argc )
+							{
+								print_usage( progname );
+								return 1;
+							}
+							fcut = atoi( argv[ i ] );
+							if( feed < BS2B_MINFEED || feed > BS2B_MAXFEED ||
+								fcut < BS2B_MINFCUT || fcut > BS2B_MAXFCUT )
+							{
+								print_usage( progname );
+								return 1;
+							}
+							level = ( ( uint32_t )feed << 16 ) | ( uint32_t )fcut;
+						}
+					} /* switch */
 					break;
 				default:
 					print_usage( progname );
@@ -160,19 +186,6 @@ int main( int argc, char *argv[] )
 			} /* swith */
 		} /* if */
 	} /* for */
-
-	switch( level )
-	{
-	case 'c':
-		level = BS2B_CMOY_CLEVEL;
-		break;
-	case 'm':
-		level = BS2B_JMEIER_CLEVEL;
-		break;
-	default:
-		level = BS2B_DEFAULT_CLEVEL;
-		break;
-	} /* switch */
 
 	#if defined( _O_BINARY )
 	_setmode( _fileno( stdin ),  _O_BINARY );
@@ -186,6 +199,14 @@ int main( int argc, char *argv[] )
 
 	bs2b_set_srate( bs2bdp, srate );
 	bs2b_set_level( bs2bdp, level );
+
+	fprintf( stderr,
+		"Crossfeed level:  %.1f dB, %d Hz, %d us.\n"
+		"LPCM stream:      %d Hz, %d bits, %s, byte order '%c'.\n",
+		( double )bs2b_get_level_feed( bs2bdp ) / 10.0,
+		bs2b_get_level_fcut( bs2bdp ), bs2b_get_level_delay( bs2bdp ),
+		bs2b_get_srate( bs2bdp ),
+		bits, unsigned_flag ? "unsigned" : "signed", endians );
 
 	switch( bits )
 	{
