@@ -7,7 +7,7 @@ Project source code and description is available at
 http://bs2b.sourceforge.net/
 
 bs2bconvert.exe - win32 x86 binary.
-libsndfile-1.dll - libsndfile library v1.0.19.
+libsndfile-1.dll - win32 library of libsndfile v1.0.20.
 
 libsndfile is copyright by Erik de Castro Lopo.
 http://www.mega-nerd.com/libsndfile/

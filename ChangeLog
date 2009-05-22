@@ -1,3 +1,6 @@
+2009-05-22 Boris Mikhaylov <http://www.tmn.ru/~bor>
+	* Win32 library of libsndfile v1.0.19 migrated to v1.0.20.
+
 2009-05-19 Boris Mikhaylov <http://www.tmn.ru/~bor>
 	* bs2bstream - add switch of crossfeed level by feed level
 	and cut frequency.
