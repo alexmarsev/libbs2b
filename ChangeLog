@@ -1,16 +1,13 @@
-2009-05-22 Boris Mikhaylov <http://www.tmn.ru/~bor>
+2009-05-25 Boris Mikhaylov <http://www.tmn.ru/~bor>
+
+	3.1.0
+
+	* bs2bconvert/bs2bstream - add switch of crossfeed level
+	by feed level and cut frequency.
 	* Win32 library of libsndfile v1.0.19 migrated to v1.0.20.
-
-2009-05-19 Boris Mikhaylov <http://www.tmn.ru/~bor>
-	* bs2bstream - add switch of crossfeed level by feed level
-	and cut frequency.
-
-2009-05-18 Boris Mikhaylov <http://www.tmn.ru/~bor>
 	* Fixed for higher compile warning level.
 	* Extended cut frequency set from [300..1000] to [300..2000] Hz
 	(BS2B_MAXFCUT)
-
-2009-05-17 Sebastian Pipping <sebastian@pipping.org>
 	* Apply compile fix patch for FreeBSD
 	by Diego Elio Petteno (flameeyes@gentoo)
 
