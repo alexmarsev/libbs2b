@@ -22,10 +22,12 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-/* MSVC: /I "$(ProjectDir)\..\sndfile" */
-/* gcc: -I../libsndfile-1.0.17/src */
+/* libsndfile is copyright by Erik de Castro Lopo.
+ * http://www.mega-nerd.com/libsndfile/
+ */
 #include <sndfile.h>
 
 #include "bs2b.h"
@@ -41,104 +43,148 @@ static void print_usage( char *progname )
 		"Bauer stereophonic-to-binaural DSP converter. Version %s\n\n",
 		BS2B_VERSION_STR );
 	printf(
-		"Usage : %s [-x] <input file> <output file>\n", progname );
+		"Usage : %s [-l L|(L1 L2)] <input file> <output file>\n",
+		progname );
 	printf(
-		" x=d|c|m:\n"
-		"   d - default preset     - 700Hz/260us, 4.5 dB;\n"
-		"   c - Chu Moy's preset   - 700Hz/260us, 6.0 dB;\n"
-		"   m - Jan Meier's preset - 650Hz/280us, 9.5 dB.\n" );
+		"-h - this help.\n"
+		"-l - crossfeed level, L = d|c|m:\n"
+		"     d - default preset     - 700Hz/260us, 4.5 dB;\n"
+		"     c - Chu Moy's preset   - 700Hz/260us, 6.0 dB;\n"
+		"     m - Jan Meier's preset - 650Hz/280us, 9.5 dB.\n"
+		"     Or L1 = [%d..%d] mB of feed level (%d..%d dB)\n"
+		"     and L2 = [%d..%d] Hz of cut frequency.\n",
+		BS2B_MINFEED, BS2B_MAXFEED, BS2B_MINFEED / 10, BS2B_MAXFEED / 10,
+		BS2B_MINFCUT, BS2B_MAXFCUT );
 } /* print_usage() */
 
 int main( int argc, char *argv[] )
 {
 	char     *progname, *infilename, *outfilename, *tmpstr;
-	SNDFILE  *infile = NULL, *outfile = NULL;
+	SNDFILE  *infile, *outfile;
 	SF_INFO  sfinfo;
 	t_bs2bdp bs2bdp;
-	uint32_t srate;
-	uint32_t level;
+	uint32_t srate = BS2B_DEFAULT_SRATE;
+	uint32_t level = BS2B_DEFAULT_CLEVEL;
+	int i;
 
 	tmpstr = strrchr( argv[ 0 ], '/' );
 	tmpstr = tmpstr ? tmpstr + 1 : argv[ 0 ];
 	progname = strrchr( tmpstr, '\\' );
 	progname = progname ? progname + 1 : tmpstr;
 
-	if( argc < 3 || argc > 4 )
+	if( argc >= 3 )
+	{
+		outfilename = argv[ --argc ];
+		infilename  = argv[ --argc ];
+	}
+	else
 	{
 		print_usage( progname );
 		return 1;
 	}
 
-	infilename  = argv[ argc - 2 ];
-	outfilename = argv[ argc - 1 ];
-
-	level = BS2B_DEFAULT_CLEVEL;
-
-	if( argc == 4 )
+	for( i = 1; i < argc; i++ )
 	{
-		if( ( !argv[ 1 ][ 1 ] ) || ( argv[ 1 ][ 0 ] != '-' ) )
+		if( '-' == argv[ i ][ 0 ] )
+		{
+			switch( argv[ i ][ 1 ] )
+			{
+			case 'h':
+				print_usage( progname );
+				return 1;
+
+			case 'l':
+				if( ++i >= argc )
+				{
+					print_usage( progname );
+					return 1;
+				}
+				switch( argv[ i ][ 0 ] )
+				{
+				case 'd':
+					level = BS2B_DEFAULT_CLEVEL;
+					break;
+				case 'c':
+					level = BS2B_CMOY_CLEVEL;
+					break;
+				case 'm':
+					level = BS2B_JMEIER_CLEVEL;
+					break;
+				default:
+					{
+						int feed, fcut;
+
+						feed = atoi( argv[ i ] );
+						if( ++i >= argc )
+						{
+							print_usage( progname );
+							return 1;
+						}
+						fcut = atoi( argv[ i ] );
+						if( feed < BS2B_MINFEED || feed > BS2B_MAXFEED ||
+							fcut < BS2B_MINFCUT || fcut > BS2B_MAXFCUT )
+						{
+							print_usage( progname );
+							return 1;
+						}
+						level = ( ( uint32_t )feed << 16 ) | ( uint32_t )fcut;
+					}
+				} /* switch */
+				break;
+
+			default:
+				print_usage( progname );
+				return 1;
+			} /* swith */
+		}
+		else
 		{
 			print_usage( progname );
 			return 1;
 		}
-
-		switch( argv[ 1 ][ 1 ] )
-		{
-		case 'c':
-			level = BS2B_CMOY_CLEVEL;
-			break;
-
-		case 'm':
-			level = BS2B_JMEIER_CLEVEL;
-			break;
-
-		case 'd':
-			level = BS2B_DEFAULT_CLEVEL;
-			break;
-
-		default:
-			print_usage( progname );
-			return 1;
-		} /* switch */
-	}
+	} /* for */
 
 	if( strcmp( infilename, outfilename ) == 0 )
 	{
-		puts( "Error : Input and output filenames are the same.\n\n" );
-		print_usage( progname );
+		printf( "Error : Input and output filenames are the same.\n\n" );
 		return 1;
 	}
 	
 	if( ( infile = sf_open( infilename, SFM_READ, &sfinfo ) ) == NULL )
 	{
 		printf( "Not able to open input file %s.\n", infilename );
-		puts( sf_strerror( NULL ) );
+		printf( sf_strerror( NULL ) );
 		return 1;
 	}
 
 	if( sfinfo.channels != 2 )
 	{
-		puts( "Input file is not a stereo.\n" );
+		printf( "Input file is not a stereo.\n" );
 		sf_close( infile );
 		return 1;
 	}
 
 	srate = sfinfo.samplerate;
 
-	/* Open the output file. */
-	if( ( outfile = sf_open( outfilename, SFM_WRITE, &sfinfo ) ) == NULL )
+	if( srate < BS2B_MINSRATE || srate > BS2B_MAXSRATE )
 	{
-		printf( "Not able to open output file %s : %s\n", outfilename, sf_strerror( NULL ) );
+		printf( "Not supported sample rate '%d'.\n", srate );
 		sf_close( infile );
 		return 1;
 	}
 
-	printf( "Converting file %s to file %s\nsample rate=%u...",
-		infilename, outfilename, srate );
+	/* Open the output file. */
+	if( ( outfile = sf_open( outfilename, SFM_WRITE, &sfinfo ) ) == NULL )
+	{
+		printf( "Not able to open output file %s : %s\n",
+			outfilename, sf_strerror( NULL ) );
+		sf_close( infile );
+		return 1;
+	}
 
 	if( NULL == ( bs2bdp = bs2b_open() ) )
 	{
-		puts( "Not able to allocate data\n" );
+		printf( "Not able to allocate data\n" );
 		sf_close( infile );
 		sf_close( outfile );
 		return 1;
@@ -146,6 +192,12 @@ int main( int argc, char *argv[] )
 
 	bs2b_set_srate( bs2bdp, srate );
 	bs2b_set_level( bs2bdp, level );
+
+	printf( "Crossfeed level: %.1f dB, %d Hz, %d us.\n",
+		( double )bs2b_get_level_feed( bs2bdp ) / 10.0,
+		bs2b_get_level_fcut( bs2bdp ), bs2b_get_level_delay( bs2bdp ) );
+	printf( "Converting file '%s' to file '%s'\nsample rate = %u...",
+		infilename, outfilename, bs2b_get_srate( bs2bdp ) );
 
 	copy_metadata( outfile, infile );
 
@@ -157,7 +209,7 @@ int main( int argc, char *argv[] )
 	sf_close( infile );
 	sf_close( outfile );
 
-	puts( " done\n" );
+	printf( " Done.\n" );
 
 	return 0;
 } /* main() */

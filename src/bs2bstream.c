@@ -38,7 +38,8 @@ static void print_usage( char *progname )
 		"Bauer stereophonic-to-binaural DSP stream converter. Version %s\n"
 		"Stereo interleaved LPCM raw data stdin-stdout converting.\n\n",
 		BS2B_VERSION_STR );
-	fprintf( stderr, "Usage : %s [-h] [-u] [-e E] [-b B] [-r R] [-l L|(L1 L2)]\n",
+	fprintf( stderr,
+		"Usage : %s [-h] [-u] [-e E] [-b B] [-r R] [-l L|(L1 L2)]\n",
 		progname );
 	fprintf( stderr,
 		"-h - this help.\n"
@@ -77,114 +78,114 @@ int main( int argc, char *argv[] )
 
 	for( i = 1; i < argc; i++ )
 	{
-		if( '-' != argv[ i ][ 0 ] )
+		if( '-' == argv[ i ][ 0 ] )
+		{
+			switch( argv[ i ][ 1 ] )
+			{
+			case 'h':
+				print_usage( progname );
+				return 1;
+
+			case 'u':
+				unsigned_flag = 1;
+				break;
+
+			case 'e':
+				if( ++i >= argc )
+				{
+					print_usage( progname );
+					return 1;
+				}
+				endians = argv[ i ][ 0 ];
+				if( endians != 'n' &&
+					endians != 'b' &&
+					endians != 'l' )
+				{
+					print_usage( progname );
+					return 1;
+				}
+				break;
+
+			case 'b':
+				if( ++i >= argc )
+				{
+					print_usage( progname );
+					return 1;
+				}
+				bits = atoi( argv[ i ] );
+				if( bits != 8 &&
+					bits != 16 &&
+					bits != 24 &&
+					bits != 32 )
+				{
+					print_usage( progname );
+					return 1;
+				}
+				break;
+
+			case 'r':
+				if( ++i >= argc )
+				{
+					print_usage( progname );
+					return 1;
+				}
+				srate = ( uint32_t )( atof( argv[ i ] ) * 1000.0 );
+				if( srate < BS2B_MINSRATE || srate > BS2B_MAXSRATE )
+				{
+					print_usage( progname );
+					return 1;
+				}
+				break;
+
+			case 'l':
+				if( ++i >= argc )
+				{
+					print_usage( progname );
+					return 1;
+				}
+				switch( argv[ i ][ 0 ] )
+				{
+				case 'd':
+					level = BS2B_DEFAULT_CLEVEL;
+					break;
+				case 'c':
+					level = BS2B_CMOY_CLEVEL;
+					break;
+				case 'm':
+					level = BS2B_JMEIER_CLEVEL;
+					break;
+				default:
+					{
+						int feed, fcut;
+
+						feed = atoi( argv[ i ] );
+						if( ++i >= argc )
+						{
+							print_usage( progname );
+							return 1;
+						}
+						fcut = atoi( argv[ i ] );
+						if( feed < BS2B_MINFEED || feed > BS2B_MAXFEED ||
+							fcut < BS2B_MINFCUT || fcut > BS2B_MAXFCUT )
+						{
+							print_usage( progname );
+							return 1;
+						}
+						level = ( ( uint32_t )feed << 16 ) | ( uint32_t )fcut;
+					}
+				} /* switch */
+				break;
+
+			default:
+				print_usage( progname );
+				return 1;
+			} /* swith */
+		}
+		else
 		{
 			print_usage( progname );
 			return 1;
 		}
-		else
-		{
-			switch( argv[ i ][ 1 ] )
-			{
-				case 'h':
-					print_usage( progname );
-					return 1;
-
-				case 'u':
-					unsigned_flag = 1;
-					break;
-
-				case 'e':
-					if( ++i >= argc )
-					{
-						print_usage( progname );
-						return 1;
-					}
-					endians = argv[ i ][ 0 ];
-					if( endians != 'n' &&
-						endians != 'b' &&
-						endians != 'l' )
-					{
-						print_usage( progname );
-						return 1;
-					}
-					break;
-
-				case 'b':
-					if( ++i >= argc )
-					{
-						print_usage( progname );
-						return 1;
-					}
-					bits = atoi( argv[ i ] );
-					if( bits != 8 &&
-						bits != 16 &&
-						bits != 24 &&
-						bits != 32 )
-					{
-						print_usage( progname );
-						return 1;
-					}
-					break;
-
-				case 'r':
-					if( ++i >= argc )
-					{
-						print_usage( progname );
-						return 1;
-					}
-					srate = ( uint32_t )( atof( argv[ i ] ) * 1000.0 );
-					if( srate < BS2B_MINSRATE || srate > BS2B_MAXSRATE )
-					{
-						print_usage( progname );
-						return 1;
-					}
-					break;
-
-				case 'l':
-					if( ++i >= argc )
-					{
-						print_usage( progname );
-						return 1;
-					}
-
-					switch( argv[ i ][ 0 ] )
-					{
-					case 'd':
-						level = BS2B_DEFAULT_CLEVEL;
-						break;
-					case 'c':
-						level = BS2B_CMOY_CLEVEL;
-						break;
-					case 'm':
-						level = BS2B_JMEIER_CLEVEL;
-						break;
-					default:
-						{
-							int feed, fcut;
-
-							feed = atoi( argv[ i ] );
-							if( ++i >= argc )
-							{
-								print_usage( progname );
-								return 1;
-							}
-							fcut = atoi( argv[ i ] );
-							if( feed < BS2B_MINFEED || feed > BS2B_MAXFEED ||
-								fcut < BS2B_MINFCUT || fcut > BS2B_MAXFCUT )
-							{
-								print_usage( progname );
-								return 1;
-							}
-							level = ( ( uint32_t )feed << 16 ) | ( uint32_t )fcut;
-						}
-					} /* switch */
-					break;
-				default:
-					print_usage( progname );
-					return 1;
-			} /* swith */
-		} /* if */
 	} /* for */
 
 	#if defined( _O_BINARY )
