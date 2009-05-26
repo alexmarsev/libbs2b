@@ -9,7 +9,7 @@ rem
 set TMPDR=C:\temp\bs2b
 
 set BS2B=C:\"\Program Files\"\bs2b\bs2bconvert.exe
-set BS2BOPT=-c
+set BS2BOPT=-l c
 
 set UFIND=C:\Program Files\UnxUtils\find.exe
 set UFINDOPT=-name *.wav -exec cmd /c %BS2B% %BS2BOPT% \"{}\" \"%TMPDR%\{}\" ;
