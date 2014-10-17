@@ -350,12 +350,6 @@ void bs2b_cross_feed_d( t_bs2bdp bs2bdp, double *sample, int n )
 		{
 			cross_feed_d( bs2bdp, sample );
 			
-			/* Clipping of overloaded samples */
-			if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
-			if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
-			if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
-			if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
-
 			sample += 2;
 		} /* while */
 	} /* if */
@@ -373,12 +367,6 @@ void bs2b_cross_feed_dbe( t_bs2bdp bs2bdp, double *sample, int n )
 			#endif
 
 			cross_feed_d( bs2bdp, sample );
-
-			/* Clipping of overloaded samples */
-			if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
-			if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
-			if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
-			if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
 
 			#ifndef WORDS_BIGENDIAN
 			int64swap( ( uint32_t * )sample );
@@ -403,12 +391,6 @@ void bs2b_cross_feed_dle( t_bs2bdp bs2bdp, double *sample, int n )
 
 			cross_feed_d( bs2bdp, sample );
 
-			/* Clipping of overloaded samples */
-			if( sample[ 0 ] >  1.0 ) sample[ 0 ] =  1.0;
-			if( sample[ 0 ] < -1.0 ) sample[ 0 ] = -1.0;
-			if( sample[ 1 ] >  1.0 ) sample[ 1 ] =  1.0;
-			if( sample[ 1 ] < -1.0 ) sample[ 1 ] = -1.0;
-
 			#ifdef WORDS_BIGENDIAN
 			int64swap( ( uint32_t * )sample );
 			int64swap( ( uint32_t * )( sample + 1 ) );
@@ -431,12 +413,6 @@ void bs2b_cross_feed_f( t_bs2bdp bs2bdp, float *sample, int n )
 			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
-
-			/* Clipping of overloaded samples */
-			if( sample_d[ 0 ] >  1.0 ) sample_d[ 0 ] =  1.0;
-			if( sample_d[ 0 ] < -1.0 ) sample_d[ 0 ] = -1.0;
-			if( sample_d[ 1 ] >  1.0 ) sample_d[ 1 ] =  1.0;
-			if( sample_d[ 1 ] < -1.0 ) sample_d[ 1 ] = -1.0;
 
 			sample[ 0 ] = ( float )sample_d[ 0 ];
 			sample[ 1 ] = ( float )sample_d[ 1 ];
@@ -463,12 +439,6 @@ void bs2b_cross_feed_fbe( t_bs2bdp bs2bdp, float *sample, int n )
 			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
-
-			/* Clipping of overloaded samples */
-			if( sample_d[ 0 ] >  1.0 ) sample_d[ 0 ] =  1.0;
-			if( sample_d[ 0 ] < -1.0 ) sample_d[ 0 ] = -1.0;
-			if( sample_d[ 1 ] >  1.0 ) sample_d[ 1 ] =  1.0;
-			if( sample_d[ 1 ] < -1.0 ) sample_d[ 1 ] = -1.0;
 
 			sample[ 0 ] = ( float )sample_d[ 0 ];
 			sample[ 1 ] = ( float )sample_d[ 1 ];
@@ -500,12 +470,6 @@ void bs2b_cross_feed_fle( t_bs2bdp bs2bdp, float *sample, int n )
 			sample_d[ 1 ] = ( double )sample[ 1 ];
 
 			cross_feed_d( bs2bdp, sample_d );
-
-			/* Clipping of overloaded samples */
-			if( sample_d[ 0 ] >  1.0 ) sample_d[ 0 ] =  1.0;
-			if( sample_d[ 0 ] < -1.0 ) sample_d[ 0 ] = -1.0;
-			if( sample_d[ 1 ] >  1.0 ) sample_d[ 1 ] =  1.0;
-			if( sample_d[ 1 ] < -1.0 ) sample_d[ 1 ] = -1.0;
 
 			sample[ 0 ] = ( float )sample_d[ 0 ];
 			sample[ 1 ] = ( float )sample_d[ 1 ];
